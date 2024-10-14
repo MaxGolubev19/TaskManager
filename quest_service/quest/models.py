@@ -21,13 +21,3 @@ class QuestOrm(Model):
     deadline: Mapped[Optional[datetime]]
     created_at: Mapped[created_at]
     updated_at: Mapped[updated_at]
-
-
-class DependencyOrm(Model):
-    __tablename__ = "dependencies"
-
-    id: Mapped[int_pk]
-    parent_id: Mapped[int]
-    child_id: Mapped[int]
-    created_at: Mapped[created_at]
-    updated_at: Mapped[updated_at]

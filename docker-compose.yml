@@ -1,12 +1,32 @@
 version: '3.8'
 
 services:
+  user_service:
+    build:
+      context: ./user_service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${DB_USER}:${DB_PASS}@user-db:${DB_PORT}/${DB_NAME}
+    depends_on:
+      - user-db
+
+  user-db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    ports:
+      - "5432:5432"
+
   quest_service:
     build:
       context: ./quest_service
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "8001:8001"
     environment:
       - DATABASE_URL=postgresql+asyncpg://${DB_USER}:${DB_PASS}@quest-db:${DB_PORT}/${DB_NAME}
     depends_on:
@@ -21,22 +41,62 @@ services:
     ports:
       - "5433:5432"
 
-  user_service:
+  board_service:
     build:
-      context: ./user_service
+      context: ./board_service
       dockerfile: Dockerfile
     ports:
-      - "8001:8001"
+      - "8002:8002"
     environment:
-      - DATABASE_URL=postgresql+asyncpg://${DB_USER}:${DB_PASS}@user-db:${DB_PORT}/${DB_NAME}
+      - DATABASE_URL=postgresql+asyncpg://${DB_USER}:${DB_PASS}@board-db:${DB_PORT}/${DB_NAME}
     depends_on:
-      - user-db
+      - board-db
 
-  user-db:
+  board-db:
     image: postgres:latest
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
     ports:
-      - "5432:5432"
+      - "5434:5432"
+
+  adventure_service:
+    build:
+      context: ./adventure_service
+      dockerfile: Dockerfile
+    ports:
+      - "8003:8003"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${DB_USER}:${DB_PASS}@adventure-db:${DB_PORT}/${DB_NAME}
+    depends_on:
+      - adventure-db
+
+  adventure-db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    ports:
+      - "5435:5432"
+
+  party_service:
+    build:
+      context: ./party_service
+      dockerfile: Dockerfile
+    ports:
+      - "8004:8004"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${DB_USER}:${DB_PASS}@party-db:${DB_PORT}/${DB_NAME}
+    depends_on:
+      - party-db
+
+  party-db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    ports:
+      - "5436:5432"

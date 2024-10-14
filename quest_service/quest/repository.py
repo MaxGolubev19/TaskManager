@@ -3,9 +3,8 @@ from typing import Optional
 from sqlalchemy import select, delete, update
 
 from quest_service.database import new_session
-from quest_service.quest.models import QuestOrm, DependencyOrm
-from quest_service.quest.schemas import SQuestCreate, SQuestGet, SQuestSearch, SQuestUpdate, SDependencyCreate, SDependencyGet, \
-    SDependencySearch
+from quest_service.quest.models import QuestOrm
+from quest_service.quest.schemas import SQuestCreate, SQuestGet, SQuestSearch, SQuestUpdate
 
 
 class QuestRepository:
@@ -109,64 +108,6 @@ class QuestRepository:
             query = query.values(user_id=data.user_id)
         if data.deadline:
             query = query.values(deadline=data.deadline)
-
-        async with new_session() as session:
-            await session.execute(query)
-            await session.commit()
-
-    @classmethod
-    async def create_dependency(cls, data: SDependencyCreate) -> int:
-        async with new_session() as session:
-            dependency = DependencyOrm(**data.model_dump())
-            session.add(dependency)
-            await session.commit()
-            return dependency.id
-
-    @classmethod
-    async def get_dependency_by_id(cls, dependency_id: int) -> Optional[SDependencyGet]:
-        async with new_session() as session:
-            result = await session.execute(
-                select(DependencyOrm)
-                .where(DependencyOrm.id == dependency_id)
-            )
-
-            dependency_model = result.scalars().one_or_none()
-            if dependency_model:
-                return SDependencyGet.model_validate(dependency_model)
-
-    @classmethod
-    async def get_dependencies(cls, data: SDependencySearch) -> list[SDependencyGet]:
-        query = select(DependencyOrm)
-
-        if data.parent_id:
-            query = query.where(DependencyOrm.parent_id == data.parent_id)
-        if data.child_id:
-            query = query.where(DependencyOrm.child_id == data.child_id)
-
-        async with new_session() as session:
-            result = await session.execute(query)
-            dependency_models = result.scalars().all()
-            for dependency_model in dependency_models:
-                print(dependency_model)
-            return [SDependencyGet.model_validate(dependency_model) for dependency_model in dependency_models]
-
-    @classmethod
-    async def delete_dependency_by_id(cls, dependency_id: int):
-        async with new_session() as session:
-            await session.execute(
-                delete(DependencyOrm)
-                .filter_by(id=dependency_id)
-            )
-            await session.commit()
-
-    @classmethod
-    async def delete_dependencies(cls, data: SDependencySearch):
-        query = delete(DependencyOrm)
-
-        if data.parent_id:
-            query = query.where(DependencyOrm.parent_id == data.parent_id)
-        if data.child_id:
-            query = query.where(DependencyOrm.child_id == data.child_id)
 
         async with new_session() as session:
             await session.execute(query)

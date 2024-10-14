@@ -2,16 +2,12 @@ from fastapi import FastAPI
 
 from contextlib import asynccontextmanager
 
-from user_service.user import router as user_router
-from user_service.role import router as role_router
-from user_service.user_role import router as user_role_router
+from adventure_service.adventure import router as adventure_router
 
-from user_service.database import create_tables
+from adventure_service.database import create_tables
 
 routers = [
-    user_router,
-    role_router,
-    user_role_router,
+    adventure_router,
 ]
 
 
