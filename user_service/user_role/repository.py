@@ -17,8 +17,8 @@ class UserRoleRepository:
     async def get(cls, data: SUserRoleSearch) -> list[SUserRoleGet]:
         query = select(UserRoleOrm)
 
-        if data.user_id:
-            query = query.where(UserRoleOrm.user_id == data.user_id)
+        if data.user_name:
+            query = query.where(UserRoleOrm.user_name == data.user_name)
         if data.space_id:
             query = query.where(UserRoleOrm.space_id == data.space_id)
         if data.space_type:
@@ -29,14 +29,14 @@ class UserRoleRepository:
         async with new_session() as session:
             result = await session.execute(query)
             user_role_models = result.scalars().all()
-            return [SUserRoleGet.model_validate(user_role_model) for user_role_model in user_role_models]
+            return [SUserRoleGet.model_validate(user_role_model, from_attributes=True) for user_role_model in user_role_models]
 
     @classmethod
     async def delete(cls, data: SUserRoleSearch):
         query = delete(UserRoleOrm)
 
-        if data.user_id:
-            query = query.where(UserRoleOrm.user_id == data.user_id)
+        if data.user_name:
+            query = query.where(UserRoleOrm.user_name == data.user_name)
         if data.space_id:
             query = query.where(UserRoleOrm.space_id == data.space_id)
         if data.space_type:
@@ -50,7 +50,7 @@ class UserRoleRepository:
 
     @classmethod
     async def update(cls, data: SUserRoleUpdate):
-        query = update(UserRoleOrm).where(UserRoleOrm.user_id == data.user_id,
+        query = update(UserRoleOrm).where(UserRoleOrm.user_name == data.user_name,
                                           UserRoleOrm.space_id == data.space_id,
                                           UserRoleOrm.space_type == data.space_type)
 

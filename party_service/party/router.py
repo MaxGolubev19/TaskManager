@@ -24,7 +24,7 @@ async def create_party(
 
 @router.get("/{party_id}")
 async def get_party_by_id(party_id: int) -> SPartyGet:
-    party = await PartyRepository.get_by_id(party_id)
+    party = await PartyRepository.get_one(party_id)
     if party is None:
         raise HTTPException(status_code=404)
     return party
@@ -40,7 +40,7 @@ async def get_parties(
 
 @router.delete("/{party_id}")
 async def delete_party_by_id(party_id: int) -> SPartyResult:
-    await PartyRepository.delete_by_id(party_id)
+    await PartyRepository.delete_one(party_id)
     return SPartyResult(
         ok=True,
     )

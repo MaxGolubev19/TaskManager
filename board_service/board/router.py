@@ -24,7 +24,7 @@ async def create_board(
 
 @router.get("/{board_id}")
 async def get_board_by_id(board_id: int) -> SBoardGet:
-    board = await BoardRepository.get_by_id(board_id)
+    board = await BoardRepository.get_one(board_id)
     if board is None:
         raise HTTPException(status_code=404)
     return board
@@ -40,7 +40,7 @@ async def get_boards(
 
 @router.delete("/{board_id}")
 async def delete_board_by_id(board_id: int) -> SBoardResult:
-    await BoardRepository.delete_by_id(board_id)
+    await BoardRepository.delete_one(board_id)
     return SBoardResult(
         ok=True,
     )

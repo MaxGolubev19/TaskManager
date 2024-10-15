@@ -14,5 +14,4 @@ class DependencyOrm(Model):
 
     __table_args__ = (
         PrimaryKeyConstraint('parent_id', 'child_id'),
-        UniqueConstraint('parent_id', 'child_id', name='id_dependency')
     )

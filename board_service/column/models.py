@@ -16,7 +16,7 @@ class ColumnOrm(Model):
     __tablename__ = "columns"
 
     id: Mapped[int_pk]
-    space_id: Mapped[Optional[int]]
+    space_id: Mapped[int]
     space_type: Mapped[ColumnSpaceType]
     order: Mapped[int]
     name: Mapped[str]

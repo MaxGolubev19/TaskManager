@@ -25,7 +25,7 @@ async def create_category(
 
 @router.get("/{category_id}")
 async def get_category_by_id(category_id: int) -> SCategoryGet:
-    category = await CategoryRepository.get_by_id(category_id)
+    category = await CategoryRepository.get_one(category_id)
     if category is None:
         raise HTTPException(status_code=404)
     return category
@@ -41,7 +41,7 @@ async def get_categories(
 
 @router.delete("/{category_id}")
 async def delete_category_by_id(category_id: int) -> SCategoryResult:
-    await CategoryRepository.delete_by_id(category_id)
+    await CategoryRepository.delete_one(category_id)
     return SCategoryResult(
         ok=True,
     )

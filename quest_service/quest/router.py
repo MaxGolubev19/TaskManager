@@ -15,7 +15,7 @@ router = APIRouter(
 async def create_quest(
         data: Annotated[SQuestCreate, Depends()]
 ) -> SQuestCreateResult:
-    quest_id = await QuestRepository.create_quest(data)
+    quest_id = await QuestRepository.create(data)
     return SQuestCreateResult(
         ok=True,
         id=quest_id,
@@ -24,7 +24,7 @@ async def create_quest(
 
 @router.get("/{quest_id}")
 async def get_quest_by_id(quest_id: int) -> SQuestGet:
-    quest = await QuestRepository.get_quest_by_id(quest_id)
+    quest = await QuestRepository.get_one(quest_id)
     if quest is None:
         raise HTTPException(status_code=404)
     return quest
@@ -34,13 +34,13 @@ async def get_quest_by_id(quest_id: int) -> SQuestGet:
 async def get_quests(
         data: Annotated[SQuestSearch, Depends()]
 ) -> list[SQuestGet]:
-    quests = await QuestRepository.get_quests(data)
+    quests = await QuestRepository.get(data)
     return quests
 
 
 @router.delete("/{quest_id}")
 async def delete_quest_by_id(quest_id: int) -> SQuestResult:
-    await QuestRepository.delete_quest_by_id(quest_id)
+    await QuestRepository.delete_one(quest_id)
     return SQuestResult(
         ok=True,
     )
@@ -50,7 +50,7 @@ async def delete_quest_by_id(quest_id: int) -> SQuestResult:
 async def delete_quests(
     data: Annotated[SQuestSearch, Depends()]
 ) -> SQuestResult:
-    await QuestRepository.delete_quests(data)
+    await QuestRepository.delete(data)
     return SQuestResult(
         ok=True,
     )
@@ -60,7 +60,7 @@ async def delete_quests(
 async def update_quest(
         data: Annotated[SQuestUpdate, Depends()],
 ) -> SQuestResult:
-    await QuestRepository.update_quest(data)
+    await QuestRepository.update(data)
     return SQuestResult(
         ok=True,
     )

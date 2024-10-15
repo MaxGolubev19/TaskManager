@@ -26,6 +26,10 @@ class Model(DeclarativeBase):
         int_pk: Integer,
     }
 
+    def __repr__(self):
+        cols = [f"{col}={getattr(self, col)}" for idx, col in enumerate(self.__table__.columns.keys())]
+        return f"<{self.__class__.__name__}> {', '.join(cols)}"
+
 
 async def create_tables():
     async with engine.begin() as conn:

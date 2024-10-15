@@ -15,7 +15,7 @@ router = APIRouter(
 async def create_dependency(
         data: Annotated[SDependencyCreate, Depends()]
 ) -> SDependencyResult:
-    await DependencyRepository.create_dependency(data)
+    await DependencyRepository.create(data)
     return SDependencyResult(
         ok=True,
     )
@@ -25,7 +25,7 @@ async def create_dependency(
 async def get_dependencies(
         data: Annotated[SDependencySearch, Depends()]
 ) -> list[SDependencyGet]:
-    dependencies = await DependencyRepository.get_dependencies(data)
+    dependencies = await DependencyRepository.get(data)
     return dependencies
 
 
@@ -33,7 +33,7 @@ async def get_dependencies(
 async def delete_dependencies(
     data: Annotated[SDependencySearch, Depends()]
 ) -> SDependencyResult:
-    await DependencyRepository.delete_dependencies(data)
+    await DependencyRepository.delete(data)
     return SDependencyResult(
         ok=True,
     )

@@ -24,7 +24,7 @@ async def create_column(
 
 @router.get("/{column_id}")
 async def get_column_by_id(column_id: int) -> SColumnGet:
-    column = await ColumnRepository.get_by_id(column_id)
+    column = await ColumnRepository.get_one(column_id)
     if column is None:
         raise HTTPException(status_code=404)
     return column
@@ -40,7 +40,7 @@ async def get_columns(
 
 @router.delete("/{column_id}")
 async def delete_column_by_id(column_id: int) -> SColumnResult:
-    await ColumnRepository.delete_by_id(column_id)
+    await ColumnRepository.delete_one(column_id)
     return SColumnResult(
         ok=True,
     )

@@ -10,9 +10,6 @@ class SDependencyGet(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
-
 
 class SDependencyCreate(BaseModel):
     parent_id: int

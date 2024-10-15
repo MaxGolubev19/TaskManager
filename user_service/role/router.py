@@ -24,7 +24,7 @@ async def create_role(
 
 @router.get("/{role_id}")
 async def get_role_by_id(role_id: int) -> SRoleGet:
-    role = await RoleRepository.get_by_id(role_id)
+    role = await RoleRepository.get_one(role_id)
     if role is None:
         raise HTTPException(status_code=404)
     return role
@@ -40,7 +40,7 @@ async def get_roles(
 
 @router.delete("/{role_id}")
 async def delete_role_by_id(role_id: int) -> SRoleResult:
-    await RoleRepository.delete_by_id(role_id)
+    await RoleRepository.delete_one(role_id)
     return SRoleResult(
         ok=True,
     )

@@ -1,6 +1,6 @@
 from typing import Optional
 
-from sqlalchemy import select, delete, update
+from sqlalchemy import select, delete, update, and_
 
 from adventure_service.database import new_session
 from adventure_service.adventure.models import AdventureOrm
@@ -17,32 +17,31 @@ class AdventureRepository:
             return adventure.id
 
     @classmethod
-    async def get_by_id(cls, adventure_id: int) -> Optional[SAdventureGet]:
+    async def get_one(cls, adventure_id: int) -> Optional[SAdventureGet]:
         async with new_session() as session:
-            result = await session.execute(
-                select(AdventureOrm)
-                .where(AdventureOrm.id == adventure_id)
-            )
-            adventure_model = result.scalars().one_or_none()
-            if adventure_model:
-                return SAdventureGet.model_validate(adventure_model)
+            adventure = session.get(AdventureOrm, adventure_id)
+            if adventure:
+                return SAdventureGet.model_validate(adventure, from_attributes=True)
 
     @classmethod
     async def get(cls, data: SAdventureSearch) -> list[SAdventureGet]:
-        query = select(AdventureOrm)
+        filters = []
 
         if data.name:
-            query = query.where(AdventureOrm.name == data.name)
+            filters.append(AdventureOrm.name == data.name)
         if data.party_id:
-            query = query.where(AdventureOrm.party_id == data.party_id)
+            filters.append(AdventureOrm.party_id == data.party_id)
 
         async with new_session() as session:
-            result = await session.execute(query)
+            result = await session.execute(
+                select(AdventureOrm)
+                .filter(and_(*filters))
+            )
             adventure_models = result.scalars().all()
-            return [SAdventureGet.model_validate(adventure_model) for adventure_model in adventure_models]
+            return [SAdventureGet.model_validate(adventure_model, from_attributes=True) for adventure_model in adventure_models]
 
     @classmethod
-    async def delete_by_id(cls, adventure_id: int):
+    async def delete_one(cls, adventure_id: int):
         async with new_session() as session:
             await session.execute(
                 delete(AdventureOrm)
@@ -52,15 +51,18 @@ class AdventureRepository:
 
     @classmethod
     async def delete(cls, data: SAdventureSearch):
-        query = delete(AdventureOrm)
+        filters = []
 
         if data.name:
-            query = query.where(AdventureOrm.name == data.name)
+            filters.append(AdventureOrm.name == data.name)
         if data.party_id:
-            query = query.where(AdventureOrm.party_id == data.party_id)
+            filters.append(AdventureOrm.party_id == data.party_id)
 
         async with new_session() as session:
-            await session.execute(query)
+            await session.execute(
+                delete(AdventureOrm)
+                .filter(and_(*filters))
+            )
             await session.commit()
 
     @classmethod

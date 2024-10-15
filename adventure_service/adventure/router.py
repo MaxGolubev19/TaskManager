@@ -25,7 +25,7 @@ async def create_adventure(
 
 @router.get("/{adventure_id}")
 async def get_adventure_by_id(adventure_id: int) -> SAdventureGet:
-    adventure = await AdventureRepository.get_by_id(adventure_id)
+    adventure = await AdventureRepository.get_one(adventure_id)
     if adventure is None:
         raise HTTPException(status_code=404)
     return adventure
@@ -41,7 +41,7 @@ async def get_adventures(
 
 @router.delete("/{adventure_id}")
 async def delete_adventure_by_id(adventure_id: int) -> SAdventureResult:
-    await AdventureRepository.delete_by_id(adventure_id)
+    await AdventureRepository.delete_one(adventure_id)
     return SAdventureResult(
         ok=True,
     )

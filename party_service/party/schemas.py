@@ -10,9 +10,6 @@ class SPartyGet(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
-
 
 class SPartyCreate(BaseModel):
     name: str

@@ -9,9 +9,6 @@ class SUserGet(BaseModel):
     role_id: int
     created_at: datetime
     updated_at: datetime
-
-    class Config:
-        from_attributes = True
     
 
 class SUserCreate(BaseModel):

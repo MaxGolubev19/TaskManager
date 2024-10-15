@@ -19,13 +19,9 @@ class UserRepository:
     @classmethod
     async def get_one(cls, user_name: str) -> Optional[SUserGet]:
         async with new_session() as session:
-            result = await session.execute(
-                select(UserOrm)
-                .where(UserOrm.name == user_name)
-            )
-            user_model = result.scalars().one_or_none()
-            if user_model:
-                return SUserGet.model_validate(user_model)
+            user = session.get(UserOrm, user_name)
+            if user:
+                return SUserGet.model_validate(user, from_attributes=True)
 
     @classmethod
     async def get(cls, data: SUserSearch) -> list[SUserGet]:
@@ -37,7 +33,7 @@ class UserRepository:
         async with new_session() as session:
             result = await session.execute(query)
             user_models = result.scalars().all()
-            return [SUserGet.model_validate(user_model) for user_model in user_models]
+            return [SUserGet.model_validate(user_model, from_attributes=True) for user_model in user_models]
 
     @classmethod
     async def delete_one(cls, user_name: str):

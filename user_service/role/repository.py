@@ -17,15 +17,11 @@ class RoleRepository:
             return role.id
 
     @classmethod
-    async def get_by_id(cls, role_id: int) -> Optional[SRoleGet]:
+    async def get_one(cls, role_id: int) -> Optional[SRoleGet]:
         async with new_session() as session:
-            result = await session.execute(
-                select(RoleOrm)
-                .where(RoleOrm.id == role_id)
-            )
-            role_model = result.scalars().one_or_none()
-            if role_model:
-                return SRoleGet.model_validate(role_model)
+            role = session.get(RoleOrm, role_id)
+            if role:
+                return SRoleGet.model_validate(role, from_attributes=True)
 
     @classmethod
     async def get(cls, data: SRoleSearch) -> list[SRoleGet]:
@@ -41,10 +37,10 @@ class RoleRepository:
         async with new_session() as session:
             result = await session.execute(query)
             role_models = result.scalars().all()
-            return [SRoleGet.model_validate(role_model) for role_model in role_models]
+            return [SRoleGet.model_validate(role_model, from_attributes=True) for role_model in role_models]
 
     @classmethod
-    async def delete_by_id(cls, role_id: int):
+    async def delete_one(cls, role_id: int):
         async with new_session() as session:
             await session.execute(
                 delete(RoleOrm)
