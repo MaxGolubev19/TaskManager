@@ -43,7 +43,6 @@ class SQuestSearch(BaseModel):
 
 
 class SQuestUpdate(BaseModel):
-    id: int
     name: Optional[str] = None
     category_id: Optional[int] = None
     column_id: Optional[int] = None

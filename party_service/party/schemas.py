@@ -20,7 +20,6 @@ class SPartySearch(BaseModel):
 
 
 class SPartyUpdate(BaseModel):
-    id: int
     name: Optional[str] = None
 
 

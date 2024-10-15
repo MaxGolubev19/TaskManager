@@ -62,12 +62,28 @@ class PartyRepository:
             await session.commit()
 
     @classmethod
-    async def update(cls, data: SPartyUpdate):
-        query = update(PartyOrm).where(PartyOrm.id == data.id)
+    async def put(cls, party_id: int, data: SPartyUpdate):
+        async with new_session() as session:
+            await session.execute(
+                update(PartyOrm)
+                .where(PartyOrm.id == party_id)
+                .values(
+                    name=data.name,
+                )
+            )
+            await session.commit()
+
+    @classmethod
+    async def patch(cls, party_id: int, data: SPartyUpdate):
+        values = {}
 
         if data.name:
-            query = query.values(name=data.name)
+            values['name'] = data.name
 
         async with new_session() as session:
-            await session.execute(query)
+            await session.execute(
+                update(PartyOrm)
+                .where(PartyOrm.id == party_id)
+                .values(**values)
+            )
             await session.commit()

@@ -13,7 +13,7 @@ router = APIRouter(
 
 @router.post("")
 async def create_column(
-        data: Annotated[SColumnCreate, Depends()]
+        data: Annotated[SColumnCreate, Depends()],
 ) -> SColumnCreateResult:
     column_id = await ColumnRepository.create(data)
     return SColumnCreateResult(
@@ -23,7 +23,9 @@ async def create_column(
 
 
 @router.get("/{column_id}")
-async def get_column_by_id(column_id: int) -> SColumnGet:
+async def get_column_by_id(
+        column_id: int,
+) -> SColumnGet:
     column = await ColumnRepository.get_one(column_id)
     if column is None:
         raise HTTPException(status_code=404)
@@ -32,14 +34,16 @@ async def get_column_by_id(column_id: int) -> SColumnGet:
 
 @router.get("")
 async def get_columns(
-        data: Annotated[SColumnSearch, Depends()]
+        data: Annotated[SColumnSearch, Depends()],
 ) -> list[SColumnGet]:
     columns = await ColumnRepository.get(data)
     return columns
 
 
 @router.delete("/{column_id}")
-async def delete_column_by_id(column_id: int) -> SColumnResult:
+async def delete_column_by_id(
+        column_id: int,
+) -> SColumnResult:
     await ColumnRepository.delete_one(column_id)
     return SColumnResult(
         ok=True,
@@ -48,7 +52,7 @@ async def delete_column_by_id(column_id: int) -> SColumnResult:
 
 @router.delete("")
 async def delete_columns(
-        data: Annotated[SColumnSearch, Depends()]
+        data: Annotated[SColumnSearch, Depends()],
 ) -> SColumnResult:
     await ColumnRepository.delete(data)
     return SColumnResult(
@@ -56,11 +60,23 @@ async def delete_columns(
     )
 
 
-@router.patch("")
+@router.put("/{column_id}")
 async def update_column(
-        data: Annotated[SColumnUpdate, Depends()]
+        column_id: int,
+        data: Annotated[SColumnUpdate, Depends()],
 ) -> SColumnResult:
-    await ColumnRepository.update(data)
+    await ColumnRepository.put(column_id, data)
+    return SColumnResult(
+        ok=True,
+    )
+
+
+@router.patch("/{column_id}")
+async def update_column(
+        column_id: int,
+        data: Annotated[SColumnUpdate, Depends()],
+) -> SColumnResult:
+    await ColumnRepository.patch(column_id, data)
     return SColumnResult(
         ok=True,
     )

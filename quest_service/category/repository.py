@@ -79,18 +79,36 @@ class CategoryRepository:
             await session.commit()
 
     @classmethod
-    async def update(cls, data: SCategoryUpdate):
-        query = update(CategoryOrm).where(CategoryOrm.id == data.id)
+    async def put(cls, category_id: int, data: SCategoryUpdate):
+        async with new_session() as session:
+            await session.execute(
+                update(CategoryOrm)
+                .where(CategoryOrm.id == category_id)
+                .values(
+                    name=data.name,
+                    space_id=data.space_id,
+                    space_type=data.space_type,
+                )
+            )
+            await session.commit()
+
+    @classmethod
+    async def patch(cls, category_id: int, data: SCategoryUpdate):
+        values = {}
 
         if data.name:
-            query = query.values(name=data.name)
+            values['name'] = data.name
         if data.space_id:
-            query = query.values(space_id=data.space_id)
+            values['space_id'] = data.space_id
         if data.space_type:
-            query = query.values(space_type=data.space_type)
+            values['space_type'] = data.space_type
 
         async with new_session() as session:
-            await session.execute(query)
+            await session.execute(
+                update(CategoryOrm)
+                .where(CategoryOrm.id == category_id)
+                .values(**values)
+            )
             await session.commit()
 
 

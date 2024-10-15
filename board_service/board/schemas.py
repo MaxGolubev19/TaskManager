@@ -26,7 +26,6 @@ class SBoardSearch(BaseModel):
 
 
 class SBoardUpdate(BaseModel):
-    id: int
     name: Optional[str] = None
     adventure_id: Optional[int] = None
     party_id: Optional[int] = None

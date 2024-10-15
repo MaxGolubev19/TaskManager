@@ -14,7 +14,7 @@ router = APIRouter(
 
 @router.post("")
 async def create_adventure(
-        data: Annotated[SAdventureCreate, Depends()]
+        data: Annotated[SAdventureCreate, Depends()],
 ) -> SAdventureCreateResult:
     adventure_id = await AdventureRepository.create(data)
     return SAdventureCreateResult(
@@ -24,7 +24,9 @@ async def create_adventure(
 
 
 @router.get("/{adventure_id}")
-async def get_adventure_by_id(adventure_id: int) -> SAdventureGet:
+async def get_adventure(
+        adventure_id: int,
+) -> SAdventureGet:
     adventure = await AdventureRepository.get_one(adventure_id)
     if adventure is None:
         raise HTTPException(status_code=404)
@@ -33,14 +35,16 @@ async def get_adventure_by_id(adventure_id: int) -> SAdventureGet:
 
 @router.get("")
 async def get_adventures(
-        data: Annotated[SAdventureSearch, Depends()]
+        data: Annotated[SAdventureSearch, Depends()],
 ) -> list[SAdventureGet]:
     adventures = await AdventureRepository.get(data)
     return adventures
 
 
 @router.delete("/{adventure_id}")
-async def delete_adventure_by_id(adventure_id: int) -> SAdventureResult:
+async def delete_adventure(
+        adventure_id: int,
+) -> SAdventureResult:
     await AdventureRepository.delete_one(adventure_id)
     return SAdventureResult(
         ok=True,
@@ -49,7 +53,7 @@ async def delete_adventure_by_id(adventure_id: int) -> SAdventureResult:
 
 @router.delete("")
 async def delete_adventures(
-        data: Annotated[SAdventureSearch, Depends()]
+        data: Annotated[SAdventureSearch, Depends()],
 ) -> SAdventureResult:
     await AdventureRepository.delete(data)
     return SAdventureResult(
@@ -57,11 +61,23 @@ async def delete_adventures(
     )
 
 
-@router.patch("")
+@router.put("/{adventure_id}")
 async def update_adventure(
-        data: Annotated[SAdventureUpdate, Depends()]
+        adventure_id: int,
+        data: Annotated[SAdventureUpdate, Depends()],
 ) -> SAdventureResult:
-    await AdventureRepository.update(data)
+    await AdventureRepository.put(adventure_id, data)
+    return SAdventureResult(
+        ok=True,
+    )
+
+
+@router.patch("/{adventure_id}")
+async def update_adventure(
+        adventure_id: int,
+        data: Annotated[SAdventureUpdate, Depends()],
+) -> SAdventureResult:
+    await AdventureRepository.patch(adventure_id, data)
     return SAdventureResult(
         ok=True,
     )

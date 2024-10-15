@@ -13,7 +13,7 @@ router = APIRouter(
 
 @router.post("")
 async def create_party(
-        data: Annotated[SPartyCreate, Depends()]
+        data: Annotated[SPartyCreate, Depends()],
 ) -> SPartyCreateResult:
     party_id = await PartyRepository.create(data)
     return SPartyCreateResult(
@@ -23,7 +23,9 @@ async def create_party(
 
 
 @router.get("/{party_id}")
-async def get_party_by_id(party_id: int) -> SPartyGet:
+async def get_party_by_id(
+        party_id: int,
+) -> SPartyGet:
     party = await PartyRepository.get_one(party_id)
     if party is None:
         raise HTTPException(status_code=404)
@@ -32,14 +34,16 @@ async def get_party_by_id(party_id: int) -> SPartyGet:
 
 @router.get("")
 async def get_parties(
-        data: Annotated[SPartySearch, Depends()]
+        data: Annotated[SPartySearch, Depends()],
 ) -> list[SPartyGet]:
     parties = await PartyRepository.get(data)
     return parties
 
 
 @router.delete("/{party_id}")
-async def delete_party_by_id(party_id: int) -> SPartyResult:
+async def delete_party_by_id(
+        party_id: int,
+) -> SPartyResult:
     await PartyRepository.delete_one(party_id)
     return SPartyResult(
         ok=True,
@@ -48,7 +52,7 @@ async def delete_party_by_id(party_id: int) -> SPartyResult:
 
 @router.delete("")
 async def delete_parties(
-        data: Annotated[SPartySearch, Depends()]
+        data: Annotated[SPartySearch, Depends()],
 ) -> SPartyResult:
     await PartyRepository.delete(data)
     return SPartyResult(
@@ -56,11 +60,23 @@ async def delete_parties(
     )
 
 
-@router.patch("")
+@router.put("/{party_id}")
 async def update_party(
-        data: Annotated[SPartyUpdate, Depends()]
+        party_id: int,
+        data: Annotated[SPartyUpdate, Depends()],
 ) -> SPartyResult:
-    await PartyRepository.update(data)
+    await PartyRepository.put(party_id, data)
+    return SPartyResult(
+        ok=True,
+    )
+
+
+@router.patch("/{party_id}")
+async def update_party(
+        party_id: int,
+        data: Annotated[SPartyUpdate, Depends()],
+) -> SPartyResult:
+    await PartyRepository.patch(party_id, data)
     return SPartyResult(
         ok=True,
     )

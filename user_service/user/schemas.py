@@ -21,7 +21,6 @@ class SUserSearch(BaseModel):
 
 
 class SUserUpdate(BaseModel):
-    name: str
     role_id: Optional[int] = None
 
 

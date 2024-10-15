@@ -13,7 +13,7 @@ router = APIRouter(
 
 @router.post("")
 async def create_user(
-        data: Annotated[SUserCreate, Depends()]
+        data: Annotated[SUserCreate, Depends()],
 ) -> SUserResult:
     await UserRepository.create(data)
     return SUserResult(
@@ -22,7 +22,9 @@ async def create_user(
 
 
 @router.get("/{user_name}")
-async def get_user(user_name: str) -> SUserGet:
+async def get_user(
+        user_name: str,
+) -> SUserGet:
     user = await UserRepository.get_one(user_name)
     if user is None:
         raise HTTPException(status_code=404)
@@ -31,14 +33,16 @@ async def get_user(user_name: str) -> SUserGet:
 
 @router.get("")
 async def get_users(
-        data: Annotated[SUserSearch, Depends()]
+        data: Annotated[SUserSearch, Depends()],
 ) -> list[SUserGet]:
     users = await UserRepository.get(data)
     return users
 
 
 @router.delete("/{user_name}")
-async def delete_user(user_name: str) -> SUserResult:
+async def delete_user(
+        user_name: str,
+) -> SUserResult:
     await UserRepository.delete_one(user_name)
     return SUserResult(
         ok=True,
@@ -47,7 +51,7 @@ async def delete_user(user_name: str) -> SUserResult:
 
 @router.delete("")
 async def delete_users(
-        data: Annotated[SUserSearch, Depends()]
+        data: Annotated[SUserSearch, Depends()],
 ) -> SUserResult:
     await UserRepository.delete(data)
     return SUserResult(
@@ -55,11 +59,23 @@ async def delete_users(
     )
 
 
-@router.patch("")
+@router.put("/{user_name}")
 async def update_user(
-        data: Annotated[SUserUpdate, Depends()]
+        user_name: str,
+        data: Annotated[SUserUpdate, Depends()],
 ) -> SUserResult:
-    await UserRepository.update(data)
+    await UserRepository.put(user_name, data)
+    return SUserResult(
+        ok=True,
+    )
+
+
+@router.patch("/{user_name}")
+async def update_user(
+        user_name: str,
+        data: Annotated[SUserUpdate, Depends()],
+) -> SUserResult:
+    await UserRepository.patch(user_name, data)
     return SUserResult(
         ok=True,
     )

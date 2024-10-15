@@ -28,7 +28,6 @@ class SRoleSearch(BaseModel):
 
 
 class SRoleUpdate(BaseModel):
-    id: int
     name: Optional[str] = None
     space_id: Optional[int] = None
     space_type: Optional[RoleSpaceType] = None

@@ -28,7 +28,6 @@ class SCategorySearch(BaseModel):
 
 
 class SCategoryUpdate(BaseModel):
-    id: int
     name: Optional[str] = None
     space_id: Optional[int] = None
     space_type: Optional[CategorySpaceType] = None

@@ -31,7 +31,6 @@ class SColumnSearch(BaseModel):
 
 
 class SColumnUpdate(BaseModel):
-    id: int
     space_id: Optional[int] = None
     space_type: Optional[ColumnSpaceType] = None
     order: Optional[int] = None

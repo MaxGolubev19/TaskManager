@@ -56,12 +56,28 @@ class UserRepository:
             await session.commit()
 
     @classmethod
-    async def update(cls, data: SUserUpdate):
-        query = update(UserOrm).where(UserOrm.name == data.name)
+    async def put(cls, user_name: str, data: SUserUpdate):
+        async with new_session() as session:
+            await session.execute(
+                update(UserOrm)
+                .where(UserOrm.name == user_name)
+                .values(
+                    role_id=data.role_id,
+                )
+            )
+            await session.commit()
+
+    @classmethod
+    async def patch(cls, user_name: str, data: SUserUpdate):
+        values = {}
 
         if data.role_id:
-            query = query.values(role_id=data.role_id)
+            values['role_id'] = data.role_id
 
         async with new_session() as session:
-            await session.execute(query)
+            await session.execute(
+                update(UserOrm)
+                .where(UserOrm.name == user_name)
+                .values(**values)
+            )
             await session.commit()

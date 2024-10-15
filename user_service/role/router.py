@@ -13,7 +13,7 @@ router = APIRouter(
 
 @router.post("")
 async def create_role(
-        data: Annotated[SRoleCreate, Depends()]
+        data: Annotated[SRoleCreate, Depends()],
 ) -> SRoleCreateResult:
     role_id = await RoleRepository.create(data)
     return SRoleCreateResult(
@@ -23,7 +23,9 @@ async def create_role(
 
 
 @router.get("/{role_id}")
-async def get_role_by_id(role_id: int) -> SRoleGet:
+async def get_role_by_id(
+        role_id: int,
+) -> SRoleGet:
     role = await RoleRepository.get_one(role_id)
     if role is None:
         raise HTTPException(status_code=404)
@@ -32,14 +34,16 @@ async def get_role_by_id(role_id: int) -> SRoleGet:
 
 @router.get("")
 async def get_roles(
-        data: Annotated[SRoleSearch, Depends()]
+        data: Annotated[SRoleSearch, Depends()],
 ) -> list[SRoleGet]:
     roles = await RoleRepository.get(data)
     return roles
 
 
 @router.delete("/{role_id}")
-async def delete_role_by_id(role_id: int) -> SRoleResult:
+async def delete_role_by_id(
+        role_id: int,
+) -> SRoleResult:
     await RoleRepository.delete_one(role_id)
     return SRoleResult(
         ok=True,
@@ -48,7 +52,7 @@ async def delete_role_by_id(role_id: int) -> SRoleResult:
 
 @router.delete("")
 async def delete_roles(
-        data: Annotated[SRoleSearch, Depends()]
+        data: Annotated[SRoleSearch, Depends()],
 ) -> SRoleResult:
     await RoleRepository.delete(data)
     return SRoleResult(
@@ -56,11 +60,23 @@ async def delete_roles(
     )
 
 
-@router.patch("")
+@router.put("/{role_id}")
 async def update_role(
-        data: Annotated[SRoleUpdate, Depends()]
+        role_id: int,
+        data: Annotated[SRoleUpdate, Depends()],
 ) -> SRoleResult:
-    await RoleRepository.update(data)
+    await RoleRepository.put(role_id, data)
+    return SRoleResult(
+        ok=True,
+    )
+
+
+@router.patch("/{role_id}")
+async def update_role(
+        role_id: int,
+        data: Annotated[SRoleUpdate, Depends()],
+) -> SRoleResult:
+    await RoleRepository.patch(role_id, data)
     return SRoleResult(
         ok=True,
     )

@@ -66,14 +66,31 @@ class AdventureRepository:
             await session.commit()
 
     @classmethod
-    async def update(cls, data: SAdventureUpdate):
-        query = update(AdventureOrm).where(AdventureOrm.id == data.id)
+    async def put(cls, adventure_id: int, data: SAdventureUpdate):
+        async with new_session() as session:
+            await session.execute(
+                update(AdventureOrm)
+                .where(AdventureOrm.id == adventure_id)
+                .values(
+                    name=data.name,
+                    party_id=data.party_id
+                )
+            )
+            await session.commit()
+
+    @classmethod
+    async def patch(cls, adventure_id: int, data: SAdventureUpdate):
+        values = {}
 
         if data.name:
-            query = query.values(name=data.name)
+            values['name'] = data.name
         if data.party_id:
-            query = query.values(party_id=data.party_id)
+            values['party_id'] = data.party_id
 
         async with new_session() as session:
-            await session.execute(query)
+            await session.execute(
+                update(AdventureOrm)
+                .where(AdventureOrm.id == adventure_id)
+                .values(**values)
+            )
             await session.commit()

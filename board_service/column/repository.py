@@ -113,18 +113,37 @@ class ColumnRepository:
             await session.commit()
 
     @classmethod
-    async def update(cls, data: SColumnUpdate):
-        query = update(ColumnOrm).where(ColumnOrm.id == data.id)
+    async def put(cls, column_id: int, data: SColumnUpdate):
+        async with new_session() as session:
+            await session.execute(
+                update(ColumnOrm)
+                .where(ColumnOrm.id == column_id)
+                .valuse(
+                    space_id=data.space_id,
+                    space_type=data.space_type,
+                    order=data.order,
+                    name=data.name,
+                )
+            )
+            await session.commit()
+
+    @classmethod
+    async def patch(cls, column_id, data: SColumnUpdate):
+        values = {}
 
         if data.space_id:
-            query = query.values(space_id=data.space_id)
+            values['space_id'] = data.space_id
         if data.space_type:
-            query = query.values(space_type=data.space_type)
+            values['space_type'] = data.space_type
         if data.order:
-            query = query.values(order=data.order)
+            values['order'] = data.order
         if data.name:
-            query = query.values(name=data.name)
+            values['name'] = data.name
 
         async with new_session() as session:
-            await session.execute(query)
+            await session.execute(
+                update(ColumnOrm)
+                .where(ColumnOrm.id == column_id)
+                .values(**values)
+            )
             await session.commit()

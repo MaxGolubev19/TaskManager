@@ -3,7 +3,6 @@ from typing import Optional
 from sqlalchemy import select, delete, update, and_
 
 from board_service.column.repository import ColumnRepository
-from board_service.column.schemas import SColumnSearch
 from board_service.database import new_session
 from board_service.board.models import BoardOrm
 from board_service.board.schemas import SBoardCreate, SBoardGet, SBoardSearch, SBoardUpdate
@@ -80,16 +79,34 @@ class BoardRepository:
             await session.commit()
 
     @classmethod
-    async def update(cls, data: SBoardUpdate):
-        query = update(BoardOrm).where(BoardOrm.id == data.id)
+    async def put(cls, board_id: int, data: SBoardUpdate):
+        async with new_session() as session:
+            await session.execute(
+                update(BoardOrm)
+                .where(BoardOrm.id == board_id)
+                .values(
+                    name=data.name,
+                    adventure_id=data.adventure_id,
+                    party_id=data.party_id
+                )
+            )
+            await session.commit()
+
+    @classmethod
+    async def patch(cls, board_id: int, data: SBoardUpdate):
+        values = {}
 
         if data.name:
-            query = query.values(name=data.name)
+            values['name'] = data.name
         if data.adventure_id:
-            query = query.values(adventure_id=data.adventure_id)
+            values['adventure_id'] = data.adventure_id
         if data.party_id:
-            query = query.values(party_id=data.party_id)
+            values['party_id'] = data.party_id
 
         async with new_session() as session:
-            await session.execute(query)
+            await session.execute(
+                update(BoardOrm)
+                .where(BoardOrm.id == board_id)
+                .values(**values)
+            )
             await session.commit()

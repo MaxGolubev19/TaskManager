@@ -23,7 +23,6 @@ class SAdventureSearch(BaseModel):
 
 
 class SAdventureUpdate(BaseModel):
-    id: int
     name: Optional[str] = None
     party_id: Optional[int] = None
 

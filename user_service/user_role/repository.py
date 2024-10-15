@@ -49,14 +49,33 @@ class UserRoleRepository:
             await session.commit()
 
     @classmethod
-    async def update(cls, data: SUserRoleUpdate):
-        query = update(UserRoleOrm).where(UserRoleOrm.user_name == data.user_name,
-                                          UserRoleOrm.space_id == data.space_id,
-                                          UserRoleOrm.space_type == data.space_type)
+    async def put(cls, data: SUserRoleUpdate):
+        async with new_session() as session:
+            await session.execute(
+                update(UserRoleOrm)
+                .where(
+                    UserRoleOrm.user_name == data.user_name,
+                    UserRoleOrm.space_id == data.space_id,
+                    UserRoleOrm.space_type == data.space_type
+                ).values(
+                    role_id=data.role_id,
+                )
+            )
+            await session.commit()
+
+    @classmethod
+    async def patch(cls, data: SUserRoleUpdate):
+        values = {}
 
         if data.role_id:
-            query = query.values(role_id=data.role_id)
+            values['role_id'] = data.role_id
 
         async with new_session() as session:
-            await session.execute(query)
+            await session.execute(
+                update(UserRoleOrm).where(
+                    UserRoleOrm.user_name == data.user_name,
+                    UserRoleOrm.space_id == data.space_id,
+                    UserRoleOrm.space_type == data.space_type
+                ).values(**values)
+            )
             await session.commit()

@@ -90,26 +90,49 @@ class QuestRepository:
             await session.commit()
 
     @classmethod
-    async def update(cls, data: SQuestUpdate):
-        query = update(QuestOrm).where(QuestOrm.id == data.id)
+    async def put(cls, quest_id: int, data: SQuestUpdate):
+        async with new_session() as session:
+            await session.execute(
+                update(QuestOrm)
+                .where(QuestOrm.id == quest_id)
+                .values(
+                    name=data.name,
+                    category_id=data.category_id,
+                    column_id=data.column_id,
+                    board_id=data.board_id,
+                    adventure_id=data.adventure_id,
+                    party_id=data.party_id,
+                    user_id=data.user_id,
+                    deadline=data.deadline,
+                )
+            )
+            await session.commit()
+
+    @classmethod
+    async def patch(cls, quest_id: int, data: SQuestUpdate):
+        values = {}
 
         if data.name:
-            query = query.values(name=data.name)
+            values['name'] = data.name
         if data.category_id:
-            query = query.values(category_id=data.category_id)
+            values['category_id'] = data.category_id
         if data.column_id:
-            query = query.values(column_id=data.column_id)
+            values['column_id'] = data.column_id
         if data.board_id:
-            query = query.values(board_id=data.board_id)
+            values['board_id'] = data.board_id
         if data.adventure_id:
-            query = query.values(adventure_id=data.adventure_id)
+            values['adventure_id'] = data.adventure_id
         if data.party_id:
-            query = query.values(party_id=data.party_id)
+            values['party_id'] = data.party_id
         if data.user_id:
-            query = query.values(user_id=data.user_id)
+            values['user_id'] = data.user_id
         if data.deadline:
-            query = query.values(deadline=data.deadline)
+            values['deadline'] = data.deadline
 
         async with new_session() as session:
-            await session.execute(query)
+            await session.execute(
+                update(QuestOrm)
+                .where(QuestOrm.id == quest_id)
+                .values(**values)
+            )
             await session.commit()
