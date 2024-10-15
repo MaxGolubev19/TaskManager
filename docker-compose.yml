@@ -3,7 +3,7 @@ version: '3.8'
 services:
   user_service:
     build:
-      context: ./user_service
+      context: services/user_service
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
@@ -23,7 +23,7 @@ services:
 
   quest_service:
     build:
-      context: ./quest_service
+      context: services/quest_service
       dockerfile: Dockerfile
     ports:
       - "8001:8001"
@@ -43,7 +43,7 @@ services:
 
   board_service:
     build:
-      context: ./board_service
+      context: services/board_service
       dockerfile: Dockerfile
     ports:
       - "8002:8002"
@@ -63,7 +63,7 @@ services:
 
   adventure_service:
     build:
-      context: ./adventure_service
+      context: services/adventure_service
       dockerfile: Dockerfile
     ports:
       - "8003:8003"
@@ -83,7 +83,7 @@ services:
 
   party_service:
     build:
-      context: ./party_service
+      context: services/party_service
       dockerfile: Dockerfile
     ports:
       - "8004:8004"
