@@ -1,14 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 
 from contextlib import asynccontextmanager
 
 from services.adventure_service.adventure import router as adventure_router
 
 from services.adventure_service.database import create_tables
-
-routers = [
-    adventure_router,
-]
 
 
 @asynccontextmanager
@@ -18,5 +14,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
-for router in routers:
-    app.include_router(router)
+
+router = APIRouter(prefix="/adventure-service")
+router.include_router(adventure_router)
+
+app.include_router(router)

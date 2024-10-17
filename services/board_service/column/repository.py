@@ -4,7 +4,8 @@ from sqlalchemy import select, delete, update, and_
 
 from services.board_service.database import new_session
 from services.board_service.column.models import ColumnOrm, ColumnSpaceType
-from services.board_service.column.schemas import SColumnCreate, SColumnGet, SColumnSearch, SColumnUpdate
+from services.common.schemas.board_service.column_schemas import SColumnCreate, SColumnGet, SColumnSearch, SColumnPatch, \
+    SColumnPut
 
 
 class ColumnRepository:
@@ -39,7 +40,7 @@ class ColumnRepository:
     @classmethod
     async def get_one(cls, column_id: int) -> Optional[SColumnGet]:
         async with new_session() as session:
-            column = session.get(ColumnOrm, column_id)
+            column = await session.get(ColumnOrm, column_id)
             if column:
                 return SColumnGet.model_validate(column, from_attributes=True)
 
@@ -113,7 +114,7 @@ class ColumnRepository:
             await session.commit()
 
     @classmethod
-    async def put(cls, column_id: int, data: SColumnUpdate):
+    async def put(cls, column_id: int, data: SColumnPut):
         async with new_session() as session:
             await session.execute(
                 update(ColumnOrm)
@@ -128,7 +129,7 @@ class ColumnRepository:
             await session.commit()
 
     @classmethod
-    async def patch(cls, column_id, data: SColumnUpdate):
+    async def patch(cls, column_id, data: SColumnPatch):
         values = {}
 
         if data.space_id:

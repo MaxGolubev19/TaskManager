@@ -4,7 +4,8 @@ from sqlalchemy import select, delete, update, and_
 
 from services.party_service.database import new_session
 from services.party_service.party.models import PartyOrm
-from services.party_service.party.schemas import SPartyCreate, SPartyGet, SPartySearch, SPartyUpdate
+from services.common.schemas.party_service.party_schemas import SPartyCreate, SPartyGet, SPartySearch, SPartyPatch, \
+    SPartyPut
 
 
 class PartyRepository:
@@ -19,7 +20,7 @@ class PartyRepository:
     @classmethod
     async def get_one(cls, party_id: int) -> Optional[SPartyGet]:
         async with new_session() as session:
-            party = session.get(PartyOrm, party_id)
+            party = await session.get(PartyOrm, party_id)
             if party:
                 return SPartyGet.model_validate(party, from_attributes=True)
 
@@ -62,7 +63,7 @@ class PartyRepository:
             await session.commit()
 
     @classmethod
-    async def put(cls, party_id: int, data: SPartyUpdate):
+    async def put(cls, party_id: int, data: SPartyPut):
         async with new_session() as session:
             await session.execute(
                 update(PartyOrm)
@@ -74,7 +75,7 @@ class PartyRepository:
             await session.commit()
 
     @classmethod
-    async def patch(cls, party_id: int, data: SPartyUpdate):
+    async def patch(cls, party_id: int, data: SPartyPatch):
         values = {}
 
         if data.name:

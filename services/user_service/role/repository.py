@@ -4,7 +4,7 @@ from sqlalchemy import select, delete, update, and_
 
 from services.user_service.database import new_session
 from services.user_service.role.models import RoleOrm
-from services.user_service.role.schemas import SRoleCreate, SRoleGet, SRoleSearch, SRoleUpdate
+from services.common.schemas.user_service.role_schemas import SRoleCreate, SRoleGet, SRoleSearch, SRolePatch, SRolePut
 
 
 class RoleRepository:
@@ -19,7 +19,7 @@ class RoleRepository:
     @classmethod
     async def get_one(cls, role_id: int) -> Optional[SRoleGet]:
         async with new_session() as session:
-            role = session.get(RoleOrm, role_id)
+            role = await session.get(RoleOrm, role_id)
             if role:
                 return SRoleGet.model_validate(role, from_attributes=True)
 
@@ -67,7 +67,7 @@ class RoleRepository:
             await session.commit()
 
     @classmethod
-    async def put(cls, role_id: int, data: SRoleUpdate):
+    async def put(cls, role_id: int, data: SRolePut):
         async with new_session() as session:
             await session.execute(
                 update(RoleOrm)
@@ -81,7 +81,7 @@ class RoleRepository:
             await session.commit()
 
     @classmethod
-    async def patch(cls, role_id: int, data: SRoleUpdate):
+    async def patch(cls, role_id: int, data: SRolePatch):
         values = {}
 
         if data.name:

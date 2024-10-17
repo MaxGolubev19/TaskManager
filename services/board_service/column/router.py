@@ -3,7 +3,9 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 
 from services.board_service.column.repository import ColumnRepository
-from services.board_service.column.schemas import SColumnCreate, SColumnResult, SColumnGet, SColumnSearch, SColumnUpdate, SColumnCreateResult
+from services.common.schemas.board_service.column_schemas import SColumnCreate, SColumnResult, SColumnGet, \
+    SColumnSearch, \
+    SColumnPatch, SColumnCreateResult, SColumnPut
 
 router = APIRouter(
     prefix='/columns',
@@ -11,9 +13,9 @@ router = APIRouter(
 )
 
 
-@router.post("")
+@router.post("", status_code=201)
 async def create_column(
-        data: Annotated[SColumnCreate, Depends()],
+        data: SColumnCreate,
 ) -> SColumnCreateResult:
     column_id = await ColumnRepository.create(data)
     return SColumnCreateResult(
@@ -63,7 +65,7 @@ async def delete_columns(
 @router.put("/{column_id}")
 async def update_column(
         column_id: int,
-        data: Annotated[SColumnUpdate, Depends()],
+        data: SColumnPut,
 ) -> SColumnResult:
     await ColumnRepository.put(column_id, data)
     return SColumnResult(
@@ -74,7 +76,7 @@ async def update_column(
 @router.patch("/{column_id}")
 async def update_column(
         column_id: int,
-        data: Annotated[SColumnUpdate, Depends()],
+        data: SColumnPatch,
 ) -> SColumnResult:
     await ColumnRepository.patch(column_id, data)
     return SColumnResult(

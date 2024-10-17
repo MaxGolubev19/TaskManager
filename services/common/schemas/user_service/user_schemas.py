@@ -20,7 +20,11 @@ class SUserSearch(BaseModel):
     role_id: Optional[int] = None
 
 
-class SUserUpdate(BaseModel):
+class SUserPut(BaseModel):
+    role_id: int
+
+
+class SUserPatch(BaseModel):
     role_id: Optional[int] = None
 
 

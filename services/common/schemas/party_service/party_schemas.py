@@ -19,7 +19,11 @@ class SPartySearch(BaseModel):
     name: Optional[str] = None
 
 
-class SPartyUpdate(BaseModel):
+class SPartyPut(BaseModel):
+    name: str
+
+
+class SPartyPatch(BaseModel):
     name: Optional[str] = None
 
 

@@ -3,7 +3,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 
 from services.quest_service.dependency.repository import DependencyRepository
-from services.quest_service.dependency.schemas import SDependencyCreate, SDependencyGet, SDependencySearch, SDependencyResult
+from services.common.schemas.quest_service.dependency_schemas import SDependencyCreate, SDependencyGet, SDependencySearch, \
+    SDependencyResult
 
 router = APIRouter(
     prefix="/dependencies",
@@ -11,9 +12,9 @@ router = APIRouter(
 )
 
 
-@router.post("")
+@router.post("", status_code=201)
 async def create_dependency(
-        data: Annotated[SDependencyCreate, Depends()]
+        data: SDependencyCreate,
 ) -> SDependencyResult:
     await DependencyRepository.create(data)
     return SDependencyResult(

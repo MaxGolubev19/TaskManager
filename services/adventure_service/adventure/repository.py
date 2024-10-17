@@ -4,7 +4,8 @@ from sqlalchemy import select, delete, update, and_
 
 from services.adventure_service.database import new_session
 from services.adventure_service.adventure.models import AdventureOrm
-from services.adventure_service.adventure.schemas import SAdventureCreate, SAdventureGet, SAdventureSearch, SAdventureUpdate
+from services.common.schemas.adventure_service.adventure_schemas import SAdventureCreate, SAdventureGet, \
+    SAdventureSearch, SAdventurePatch, SAdventurePut
 
 
 class AdventureRepository:
@@ -19,7 +20,7 @@ class AdventureRepository:
     @classmethod
     async def get_one(cls, adventure_id: int) -> Optional[SAdventureGet]:
         async with new_session() as session:
-            adventure = session.get(AdventureOrm, adventure_id)
+            adventure = await session.get(AdventureOrm, adventure_id)
             if adventure:
                 return SAdventureGet.model_validate(adventure, from_attributes=True)
 
@@ -66,7 +67,7 @@ class AdventureRepository:
             await session.commit()
 
     @classmethod
-    async def put(cls, adventure_id: int, data: SAdventureUpdate):
+    async def put(cls, adventure_id: int, data: SAdventurePut):
         async with new_session() as session:
             await session.execute(
                 update(AdventureOrm)
@@ -79,7 +80,7 @@ class AdventureRepository:
             await session.commit()
 
     @classmethod
-    async def patch(cls, adventure_id: int, data: SAdventureUpdate):
+    async def patch(cls, adventure_id: int, data: SAdventurePatch):
         values = {}
 
         if data.name:

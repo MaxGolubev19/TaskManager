@@ -3,18 +3,19 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 
 from services.adventure_service.adventure.repository import AdventureRepository
-from services.adventure_service.adventure.schemas import SAdventureCreate, SAdventureResult, SAdventureGet, SAdventureSearch, SAdventureUpdate, \
-    SAdventureCreateResult
+from services.common.schemas.adventure_service.adventure_schemas import SAdventureCreate, SAdventureResult, \
+    SAdventureGet, \
+    SAdventureSearch, SAdventurePatch, SAdventureCreateResult, SAdventurePut
 
 router = APIRouter(
-    prefix='/adventures',
+    prefix="/adventures",
     tags=["Adventures"],
 )
 
 
-@router.post("")
+@router.post("", status_code=201)
 async def create_adventure(
-        data: Annotated[SAdventureCreate, Depends()],
+        data: SAdventureCreate,
 ) -> SAdventureCreateResult:
     adventure_id = await AdventureRepository.create(data)
     return SAdventureCreateResult(
@@ -64,7 +65,7 @@ async def delete_adventures(
 @router.put("/{adventure_id}")
 async def update_adventure(
         adventure_id: int,
-        data: Annotated[SAdventureUpdate, Depends()],
+        data: SAdventurePut,
 ) -> SAdventureResult:
     await AdventureRepository.put(adventure_id, data)
     return SAdventureResult(
@@ -75,7 +76,7 @@ async def update_adventure(
 @router.patch("/{adventure_id}")
 async def update_adventure(
         adventure_id: int,
-        data: Annotated[SAdventureUpdate, Depends()],
+        data: SAdventurePatch,
 ) -> SAdventureResult:
     await AdventureRepository.patch(adventure_id, data)
     return SAdventureResult(

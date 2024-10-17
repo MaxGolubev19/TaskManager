@@ -3,7 +3,7 @@ from typing import Optional
 from sqlalchemy import select, delete, update, and_
 
 from services.user_service.user.models import UserOrm
-from services.user_service.user.schemas import SUserCreate, SUserGet, SUserSearch, SUserUpdate
+from services.common.schemas.user_service.user_schemas import SUserCreate, SUserGet, SUserSearch, SUserPatch, SUserPut
 from services.user_service.database import new_session
 
 
@@ -18,7 +18,7 @@ class UserRepository:
     @classmethod
     async def get_one(cls, user_name: str) -> Optional[SUserGet]:
         async with new_session() as session:
-            user = session.get(UserOrm, user_name)
+            user = await session.get(UserOrm, user_name)
             if user:
                 return SUserGet.model_validate(user, from_attributes=True)
 
@@ -58,7 +58,7 @@ class UserRepository:
             await session.commit()
 
     @classmethod
-    async def put(cls, user_name: str, data: SUserUpdate):
+    async def put(cls, user_name: str, data: SUserPut):
         async with new_session() as session:
             await session.execute(
                 update(UserOrm)
@@ -70,7 +70,7 @@ class UserRepository:
             await session.commit()
 
     @classmethod
-    async def patch(cls, user_name: str, data: SUserUpdate):
+    async def patch(cls, user_name: str, data: SUserPatch):
         values = {}
 
         if data.role_id:

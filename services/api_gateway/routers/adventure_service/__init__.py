@@ -1,0 +1,1 @@
+from services.api_gateway.routers.adventure_service.adventure_router import router as adventure_router

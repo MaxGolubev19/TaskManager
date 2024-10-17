@@ -1,9 +1,14 @@
 from datetime import datetime
+from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel
 
-from services.user_service.role.models import RoleSpaceType
+
+class RoleSpaceType(str, Enum):
+    GLOBAL = "global"
+    PARTY = "party"
+    ADVENTURE = "adventure"
 
 
 class SRoleGet(BaseModel):
@@ -27,7 +32,13 @@ class SRoleSearch(BaseModel):
     space_type: Optional[RoleSpaceType] = None
 
 
-class SRoleUpdate(BaseModel):
+class SRolePut(BaseModel):
+    name: str
+    space_id: Optional[int] = None
+    space_type: RoleSpaceType
+
+
+class SRolePatch(BaseModel):
     name: Optional[str] = None
     space_id: Optional[int] = None
     space_type: Optional[RoleSpaceType] = None

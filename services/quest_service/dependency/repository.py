@@ -2,7 +2,7 @@ from sqlalchemy import select, delete, and_
 
 from services.quest_service.database import new_session
 from services.quest_service.dependency.models import DependencyOrm
-from services.quest_service.dependency.schemas import SDependencyCreate, SDependencyGet, SDependencySearch
+from services.common.schemas.quest_service.dependency_schemas import SDependencyCreate, SDependencyGet, SDependencySearch
 
 
 class DependencyRepository:

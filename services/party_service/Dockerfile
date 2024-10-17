@@ -1,11 +1,14 @@
 FROM python:3.9-slim
 
+WORKDIR /services/common
+COPY /common/ .
+
 WORKDIR /services/party_service
-COPY requirements.txt .
+COPY /party_service/requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+COPY /party_service/ .
 
 ENV PYTHONPATH=/
 

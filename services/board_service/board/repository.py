@@ -5,7 +5,8 @@ from sqlalchemy import select, delete, update, and_
 from services.board_service.column.repository import ColumnRepository
 from services.board_service.database import new_session
 from services.board_service.board.models import BoardOrm
-from services.board_service.board.schemas import SBoardCreate, SBoardGet, SBoardSearch, SBoardUpdate
+from services.common.schemas.board_service.board_schemas import SBoardCreate, SBoardGet, SBoardSearch, SBoardPatch, \
+    SBoardPut
 
 
 class BoardRepository:
@@ -22,7 +23,7 @@ class BoardRepository:
     @classmethod
     async def get_one(cls, board_id: int) -> Optional[SBoardGet]:
         async with new_session() as session:
-            board = session.get(BoardOrm, board_id)
+            board = await session.get(BoardOrm, board_id)
             if board:
                 return SBoardGet.model_validate(board, from_attributes=True)
 
@@ -79,7 +80,7 @@ class BoardRepository:
             await session.commit()
 
     @classmethod
-    async def put(cls, board_id: int, data: SBoardUpdate):
+    async def put(cls, board_id: int, data: SBoardPut):
         async with new_session() as session:
             await session.execute(
                 update(BoardOrm)
@@ -93,7 +94,7 @@ class BoardRepository:
             await session.commit()
 
     @classmethod
-    async def patch(cls, board_id: int, data: SBoardUpdate):
+    async def patch(cls, board_id: int, data: SBoardPatch):
         values = {}
 
         if data.name:

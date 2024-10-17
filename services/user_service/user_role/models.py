@@ -1,14 +1,8 @@
-from enum import Enum
-
 from sqlalchemy import PrimaryKeyConstraint, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
+from services.common.schemas.user_service.role_schemas import RoleSpaceType
 from services.user_service.database import Model, created_at, updated_at
-
-
-class RoleSpaceType(str, Enum):
-    PARTY = "party"
-    ADVENTURE = "adventure"
 
 
 class UserRoleOrm(Model):

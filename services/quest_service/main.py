@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 
 from contextlib import asynccontextmanager
 
@@ -8,12 +8,6 @@ from services.quest_service.category import router as category_router
 
 from services.quest_service.database import create_tables
 
-routers = [
-    quest_router,
-    dependency_router,
-    category_router,
-]
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -22,5 +16,10 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
-for router in routers:
-    app.include_router(router)
+
+router = APIRouter(prefix='/quest-service')
+router.include_router(quest_router)
+router.include_router(dependency_router)
+router.include_router(category_router)
+
+app.include_router(router)

@@ -33,6 +33,7 @@ class SQuestCreate(BaseModel):
 
 class SQuestSearch(BaseModel):
     name: Optional[str] = None
+    description: Optional[str] = None
     category_id: Optional[int] = None
     column_id: Optional[int] = None
     board_id: Optional[int] = None
@@ -42,8 +43,21 @@ class SQuestSearch(BaseModel):
     deadline: Optional[datetime] = None
 
 
-class SQuestUpdate(BaseModel):
+class SQuestPut(BaseModel):
+    name: str
+    description: Optional[str] = None
+    category_id: int
+    column_id: int
+    board_id: int
+    adventure_id: int
+    party_id: int
+    user_id: Optional[int] = None
+    deadline: Optional[datetime] = None
+
+
+class SQuestPatch(BaseModel):
     name: Optional[str] = None
+    description: Optional[str] = None
     category_id: Optional[int] = None
     column_id: Optional[int] = None
     board_id: Optional[int] = None

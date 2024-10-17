@@ -1,19 +1,20 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 
 from services.party_service.party.repository import PartyRepository
-from services.party_service.party.schemas import SPartyCreate, SPartyResult, SPartyGet, SPartySearch, SPartyUpdate, SPartyCreateResult
+from services.common.schemas.party_service.party_schemas import SPartyCreate, SPartyResult, SPartyGet, SPartySearch, \
+    SPartyPatch, SPartyCreateResult, SPartyPut
 
 router = APIRouter(
-    prefix='/parties',
+    prefix="/parties",
     tags=["Parties"],
 )
 
 
 @router.post("")
 async def create_party(
-        data: Annotated[SPartyCreate, Depends()],
+        data: SPartyCreate,
 ) -> SPartyCreateResult:
     party_id = await PartyRepository.create(data)
     return SPartyCreateResult(
@@ -63,7 +64,7 @@ async def delete_parties(
 @router.put("/{party_id}")
 async def update_party(
         party_id: int,
-        data: Annotated[SPartyUpdate, Depends()],
+        data: SPartyPut,
 ) -> SPartyResult:
     await PartyRepository.put(party_id, data)
     return SPartyResult(
@@ -74,7 +75,7 @@ async def update_party(
 @router.patch("/{party_id}")
 async def update_party(
         party_id: int,
-        data: Annotated[SPartyUpdate, Depends()],
+        data: SPartyPatch,
 ) -> SPartyResult:
     await PartyRepository.patch(party_id, data)
     return SPartyResult(

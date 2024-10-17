@@ -4,37 +4,38 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-class SBoardGet(BaseModel):
+class SAdventureGet(BaseModel):
     id: int
     name: str
-    adventure_id: int
     party_id: int
     created_at: datetime
     updated_at: datetime
 
 
-class SBoardCreate(BaseModel):
+class SAdventureCreate(BaseModel):
     name: str
-    adventure_id: int
     party_id: int
 
 
-class SBoardSearch(BaseModel):
+class SAdventureSearch(BaseModel):
     name: Optional[str] = None
-    adventure_id: Optional[int] = None
     party_id: Optional[int] = None
 
 
-class SBoardUpdate(BaseModel):
+class SAdventurePut(BaseModel):
+    name: str
+    party_id: int
+
+
+class SAdventurePatch(BaseModel):
     name: Optional[str] = None
-    adventure_id: Optional[int] = None
     party_id: Optional[int] = None
 
 
-class SBoardResult(BaseModel):
+class SAdventureResult(BaseModel):
     ok: bool = True
 
 
-class SBoardCreateResult(BaseModel):
+class SAdventureCreateResult(BaseModel):
     ok: bool = True
     id: int

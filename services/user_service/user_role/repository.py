@@ -2,7 +2,8 @@ from sqlalchemy import select, delete, update, and_
 
 from services.user_service.database import new_session
 from services.user_service.user_role.models import UserRoleOrm
-from services.user_service.user_role.schemas import SUserRoleCreate, SUserRoleGet, SUserRoleSearch, SUserRoleUpdate
+from services.common.schemas.user_service.user_role_schemas import SUserRoleCreate, SUserRoleGet, SUserRoleSearch, \
+    SUserRolePatch, SUserRolePut
 
 
 class UserRoleRepository:
@@ -52,7 +53,7 @@ class UserRoleRepository:
             await session.commit()
 
     @classmethod
-    async def put(cls, data: SUserRoleUpdate):
+    async def put(cls, data: SUserRolePut):
         async with new_session() as session:
             await session.execute(
                 update(UserRoleOrm)
@@ -67,7 +68,7 @@ class UserRoleRepository:
             await session.commit()
 
     @classmethod
-    async def patch(cls, data: SUserRoleUpdate):
+    async def patch(cls, data: SUserRolePatch):
         values = {}
 
         if data.role_id:

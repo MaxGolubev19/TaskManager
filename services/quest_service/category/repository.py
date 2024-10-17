@@ -5,7 +5,8 @@ from sqlalchemy import select, delete, update
 
 from services.quest_service.database import new_session
 from services.quest_service.category.models import CategoryOrm
-from services.quest_service.category.schemas import SCategoryCreate, SCategoryGet, SCategorySearch, SCategoryUpdate
+from services.common.schemas.quest_service.category_schemas import SCategoryCreate, SCategoryGet, SCategorySearch, \
+    SCategoryPatch, SCategoryPut
 
 
 class CategoryRepository:
@@ -28,7 +29,7 @@ class CategoryRepository:
     @classmethod
     async def get_one(cls, category_id: int) -> Optional[SCategoryGet]:
         async with new_session() as session:
-            category = session.get(CategoryOrm, category_id)
+            category = await session.get(CategoryOrm, category_id)
             if category:
                 return SCategoryGet.model_validate(category, from_attributes=True)
 
@@ -79,7 +80,7 @@ class CategoryRepository:
             await session.commit()
 
     @classmethod
-    async def put(cls, category_id: int, data: SCategoryUpdate):
+    async def put(cls, category_id: int, data: SCategoryPut):
         async with new_session() as session:
             await session.execute(
                 update(CategoryOrm)
@@ -93,7 +94,7 @@ class CategoryRepository:
             await session.commit()
 
     @classmethod
-    async def patch(cls, category_id: int, data: SCategoryUpdate):
+    async def patch(cls, category_id: int, data: SCategoryPatch):
         values = {}
 
         if data.name:

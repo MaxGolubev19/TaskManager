@@ -3,23 +3,24 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 
 from services.user_service.user_role.repository import UserRoleRepository
-from services.user_service.user_role.schemas import SUserRoleCreate, SUserRoleResult, SUserRoleGet, SUserRoleSearch, \
-    SUserRoleUpdate
+from services.common.schemas.user_service.user_role_schemas import SUserRoleCreate, SUserRoleResult, SUserRoleGet, \
+    SUserRoleSearch, SUserRolePatch, SUserRolePut
 
 router = APIRouter(
-    prefix='/user_roles',
-    tags=["UserRoles"],
+    prefix='/user-role',
+    tags=["User-Role"],
 )
 
 
-@router.post("")
+@router.post("", status_code=201)
 async def create_user_role(
-        data: Annotated[SUserRoleCreate, Depends()],
+        data: SUserRoleCreate,
 ) -> SUserRoleResult:
     await UserRoleRepository.create(data)
     return SUserRoleResult(
         ok=True,
     )
+
 
 @router.get("")
 async def get_user_roles(
@@ -41,7 +42,7 @@ async def delete_user_roles(
 
 @router.put("")
 async def update_user_role(
-        data: Annotated[SUserRoleUpdate, Depends()],
+        data: SUserRolePut,
 ) -> SUserRoleResult:
     await UserRoleRepository.put(data)
     return SUserRoleResult(
@@ -51,7 +52,7 @@ async def update_user_role(
 
 @router.patch("")
 async def update_user_role(
-        data: Annotated[SUserRoleUpdate, Depends()]
+        data: SUserRolePatch,
 ) -> SUserRoleResult:
     await UserRoleRepository.patch(data)
     return SUserRoleResult(

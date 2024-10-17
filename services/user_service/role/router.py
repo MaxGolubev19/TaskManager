@@ -3,7 +3,9 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 
 from services.user_service.role.repository import RoleRepository
-from services.user_service.role.schemas import SRoleCreate, SRoleResult, SRoleGet, SRoleSearch, SRoleUpdate, SRoleCreateResult
+from services.common.schemas.user_service.role_schemas import SRoleCreate, SRoleResult, SRoleGet, SRoleSearch, \
+    SRolePatch, \
+    SRoleCreateResult, SRolePut
 
 router = APIRouter(
     prefix='/roles',
@@ -11,9 +13,9 @@ router = APIRouter(
 )
 
 
-@router.post("")
+@router.post("", status_code=201)
 async def create_role(
-        data: Annotated[SRoleCreate, Depends()],
+        data: SRoleCreate,
 ) -> SRoleCreateResult:
     role_id = await RoleRepository.create(data)
     return SRoleCreateResult(
@@ -63,7 +65,7 @@ async def delete_roles(
 @router.put("/{role_id}")
 async def update_role(
         role_id: int,
-        data: Annotated[SRoleUpdate, Depends()],
+        data: SRolePut,
 ) -> SRoleResult:
     await RoleRepository.put(role_id, data)
     return SRoleResult(
@@ -74,7 +76,7 @@ async def update_role(
 @router.patch("/{role_id}")
 async def update_role(
         role_id: int,
-        data: Annotated[SRoleUpdate, Depends()],
+        data: SRolePatch,
 ) -> SRoleResult:
     await RoleRepository.patch(role_id, data)
     return SRoleResult(

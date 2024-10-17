@@ -4,7 +4,8 @@ from sqlalchemy import select, delete, update, and_
 
 from services.quest_service.database import new_session
 from services.quest_service.quest.models import QuestOrm
-from services.quest_service.quest.schemas import SQuestCreate, SQuestGet, SQuestSearch, SQuestUpdate
+from services.common.schemas.quest_service.quest_schemas import SQuestCreate, SQuestGet, SQuestSearch, SQuestPatch, \
+    SQuestPut
 
 
 class QuestRepository:
@@ -19,7 +20,7 @@ class QuestRepository:
     @classmethod
     async def get_one(cls, quest_id: int) -> Optional[SQuestGet]:
         async with new_session() as session:
-            quest = session.get(QuestOrm, quest_id)
+            quest = await session.get(QuestOrm, quest_id)
             if quest:
                 return SQuestGet.model_validate(quest, from_attributes=True)
 
@@ -29,6 +30,8 @@ class QuestRepository:
 
         if data.name:
             filters.append(QuestOrm.name == data.name)
+        if data.description:
+            filters.append(QuestOrm.description == data.description)
         if data.category_id:
             filters.append(QuestOrm.category_id == data.category_id)
         if data.column_id:
@@ -67,6 +70,8 @@ class QuestRepository:
 
         if data.name:
             filters.append(QuestOrm.name == data.name)
+        if data.description:
+            filters.append(QuestOrm.description == data.description)
         if data.category_id:
             filters.append(QuestOrm.category_id == data.category_id)
         if data.column_id:
@@ -90,13 +95,14 @@ class QuestRepository:
             await session.commit()
 
     @classmethod
-    async def put(cls, quest_id: int, data: SQuestUpdate):
+    async def put(cls, quest_id: int, data: SQuestPut):
         async with new_session() as session:
             await session.execute(
                 update(QuestOrm)
                 .where(QuestOrm.id == quest_id)
                 .values(
                     name=data.name,
+                    description=data.description,
                     category_id=data.category_id,
                     column_id=data.column_id,
                     board_id=data.board_id,
@@ -109,11 +115,13 @@ class QuestRepository:
             await session.commit()
 
     @classmethod
-    async def patch(cls, quest_id: int, data: SQuestUpdate):
+    async def patch(cls, quest_id: int, data: SQuestPatch):
         values = {}
 
         if data.name:
             values['name'] = data.name
+        if data.description:
+            values['description'] = data.description
         if data.category_id:
             values['category_id'] = data.category_id
         if data.column_id:

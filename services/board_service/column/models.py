@@ -1,14 +1,7 @@
-from enum import Enum as Enum
-
 from sqlalchemy.orm import Mapped
 
+from services.common.schemas.board_service.column_schemas import ColumnSpaceType
 from services.board_service.database import Model, int_pk, created_at, updated_at
-
-
-class ColumnSpaceType(str, Enum):
-    PARTY = "party"
-    ADVENTURE = "adventure"
-    BOARD = "board"
 
 
 class ColumnOrm(Model):

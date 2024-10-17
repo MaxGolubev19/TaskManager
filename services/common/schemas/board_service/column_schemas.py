@@ -1,9 +1,14 @@
 from datetime import datetime
+from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel
 
-from services.board_service.column.models import ColumnSpaceType
+
+class ColumnSpaceType(str, Enum):
+    PARTY = "party"
+    ADVENTURE = "adventure"
+    BOARD = "board"
 
 
 class SColumnGet(BaseModel):
@@ -30,7 +35,14 @@ class SColumnSearch(BaseModel):
     name: Optional[str] = None
 
 
-class SColumnUpdate(BaseModel):
+class SColumnPut(BaseModel):
+    space_id: int
+    space_type: ColumnSpaceType
+    order: int
+    name: str
+
+
+class SColumnPatch(BaseModel):
     space_id: Optional[int] = None
     space_type: Optional[ColumnSpaceType] = None
     order: Optional[int] = None

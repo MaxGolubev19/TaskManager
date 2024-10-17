@@ -3,8 +3,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 
 from services.quest_service.category.repository import CategoryRepository
-from services.quest_service.category.schemas import SCategoryCreate, SCategoryResult, SCategoryGet, SCategorySearch, SCategoryUpdate, \
-    SCategoryCreateResult
+from services.common.schemas.quest_service.category_schemas import SCategoryCreate, SCategoryResult, SCategoryGet, \
+    SCategorySearch, SCategoryPatch, SCategoryCreateResult, SCategoryPut
 
 router = APIRouter(
     prefix='/categories',
@@ -12,9 +12,9 @@ router = APIRouter(
 )
 
 
-@router.post("")
+@router.post("", status_code=201)
 async def create_category(
-        data: Annotated[SCategoryCreate, Depends()],
+        data: SCategoryCreate,
 ) -> SCategoryCreateResult:
     category_id = await CategoryRepository.create(data)
     return SCategoryCreateResult(
@@ -64,7 +64,7 @@ async def delete_categories(
 @router.put("/{category_id}")
 async def update_category(
         category_id: int,
-        data: Annotated[SCategoryUpdate, Depends()],
+        data: SCategoryPut,
 ) -> SCategoryResult:
     await CategoryRepository.put(category_id, data)
     return SCategoryResult(
@@ -75,7 +75,7 @@ async def update_category(
 @router.patch("/{category_id}")
 async def update_category(
         category_id: int,
-        data: Annotated[SCategoryUpdate, Depends()],
+        data: SCategoryPatch,
 ) -> SCategoryResult:
     await CategoryRepository.patch(category_id, data)
     return SCategoryResult(

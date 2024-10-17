@@ -1,9 +1,14 @@
 from datetime import datetime
+from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel
 
-from services.quest_service.category.models import CategorySpaceType
+
+class CategorySpaceType(str, Enum):
+    PARTY = "party"
+    ADVENTURE = "adventure"
+    BOARD = "board"
 
 
 class SCategoryGet(BaseModel):
@@ -27,7 +32,13 @@ class SCategorySearch(BaseModel):
     space_type: Optional[CategorySpaceType] = None
 
 
-class SCategoryUpdate(BaseModel):
+class SCategoryPut(BaseModel):
+    name: str
+    space_id: int
+    space_type: CategorySpaceType
+
+
+class SCategoryPatch(BaseModel):
     name: Optional[str] = None
     space_id: Optional[int] = None
     space_type: Optional[CategorySpaceType] = None

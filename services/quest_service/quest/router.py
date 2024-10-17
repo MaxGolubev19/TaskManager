@@ -3,7 +3,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 
 from services.quest_service.quest.repository import QuestRepository
-from services.quest_service.quest.schemas import SQuestCreate, SQuestGet, SQuestResult, SQuestSearch, SQuestUpdate, SQuestCreateResult
+from services.common.schemas.quest_service.quest_schemas import SQuestCreate, SQuestGet, SQuestResult, SQuestSearch, \
+    SQuestPatch, SQuestCreateResult, SQuestPut
 
 router = APIRouter(
     prefix="/quests",
@@ -11,9 +12,9 @@ router = APIRouter(
 )
 
 
-@router.post("")
+@router.post("", status_code=201)
 async def create_quest(
-        data: Annotated[SQuestCreate, Depends()],
+        data: SQuestCreate,
 ) -> SQuestCreateResult:
     quest_id = await QuestRepository.create(data)
     return SQuestCreateResult(
@@ -63,7 +64,7 @@ async def delete_quests(
 @router.put("/{quest_id}")
 async def update_quest(
         quest_id: int,
-        data: Annotated[SQuestUpdate, Depends()],
+        data: SQuestPut,
 ) -> SQuestResult:
     await QuestRepository.put(quest_id, data)
     return SQuestResult(
@@ -74,7 +75,7 @@ async def update_quest(
 @router.patch("/{quest_id}")
 async def update_quest(
         quest_id: int,
-        data: Annotated[SQuestUpdate, Depends()],
+        data: SQuestPatch,
 ) -> SQuestResult:
     await QuestRepository.patch(quest_id, data)
     return SQuestResult(

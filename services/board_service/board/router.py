@@ -3,17 +3,18 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 
 from services.board_service.board.repository import BoardRepository
-from services.board_service.board.schemas import SBoardCreate, SBoardResult, SBoardGet, SBoardSearch, SBoardUpdate, SBoardCreateResult
+from services.common.schemas.board_service.board_schemas import SBoardCreate, SBoardResult, SBoardGet, SBoardSearch, \
+    SBoardPatch, SBoardCreateResult, SBoardPut
 
 router = APIRouter(
-    prefix='/boards',
+    prefix="/boards",
     tags=["Boards"],
 )
 
 
-@router.post("")
+@router.post("", status_code=201)
 async def create_board(
-        data: Annotated[SBoardCreate, Depends()],
+        data: SBoardCreate,
 ) -> SBoardCreateResult:
     board_id = await BoardRepository.create(data)
     return SBoardCreateResult(
@@ -63,7 +64,7 @@ async def delete_boards(
 @router.put("/{board_id}")
 async def update_board(
         board_id: int,
-        data: Annotated[SBoardUpdate, Depends()],
+        data: SBoardPut,
 ) -> SBoardResult:
     await BoardRepository.put(board_id, data)
     return SBoardResult(
@@ -74,7 +75,7 @@ async def update_board(
 @router.patch("/{board_id}")
 async def update_board(
         board_id: int,
-        data: Annotated[SBoardUpdate, Depends()],
+        data: SBoardPatch,
 ) -> SBoardResult:
     await BoardRepository.patch(board_id, data)
     return SBoardResult(

@@ -1,14 +1,35 @@
 version: '3.8'
 
 services:
-  user_service:
+  api-gateway:
     build:
-      context: services/user_service
-      dockerfile: Dockerfile
+      context: services
+      dockerfile: api_gateway/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - USER_SERVICE_URL=http://taskmanager-user-service-1:8000/user-service
+      - QUEST_SERVICE_URL=http://taskmanager-quest-service-1:8001/quest-service
+      - BOARD_SERVICE_URL=http://taskmanager-board-service-1:8002/board-service
+      - ADVENTURE_SERVICE_URL=http://taskmanager-adventure-service-1:8003/adventure-service
+      - PARTY_SERVICE_URL=http://taskmanager-party-service-1:8004/party-service
+      - API_KEY=${API_KEY}
+    depends_on:
+      - user-service
+      - quest-service
+      - board-service
+      - adventure-service
+      - party-service
+
+  user-service:
+    build:
+      context: services
+      dockerfile: user_service/Dockerfile
     ports:
       - "8000:8000"
     environment:
       - DATABASE_URL=postgresql+asyncpg://${DB_USER}:${DB_PASS}@user-db:${DB_PORT}/${DB_NAME}
+      - API_KEY=${INSIDE_API_KEY}
     depends_on:
       - user-db
 
@@ -18,17 +39,17 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
-    ports:
-      - "5432:5432"
 
-  quest_service:
+  quest-service:
     build:
-      context: services/quest_service
-      dockerfile: Dockerfile
+      context: services
+      dockerfile: quest_service/Dockerfile
     ports:
       - "8001:8001"
     environment:
       - DATABASE_URL=postgresql+asyncpg://${DB_USER}:${DB_PASS}@quest-db:${DB_PORT}/${DB_NAME}
+      - API_KEY=${INSIDE_API_KEY}
+      - INSIDE_API_KEY=${INSIDE_API_KEY}
     depends_on:
       - quest-db
 
@@ -38,17 +59,16 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
-    ports:
-      - "5433:5432"
 
-  board_service:
+  board-service:
     build:
-      context: services/board_service
-      dockerfile: Dockerfile
+      context: services
+      dockerfile: board_service/Dockerfile
     ports:
       - "8002:8002"
     environment:
       - DATABASE_URL=postgresql+asyncpg://${DB_USER}:${DB_PASS}@board-db:${DB_PORT}/${DB_NAME}
+      - API_KEY=${INSIDE_API_KEY}
     depends_on:
       - board-db
 
@@ -58,17 +78,16 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
-    ports:
-      - "5434:5432"
 
-  adventure_service:
+  adventure-service:
     build:
-      context: services/adventure_service
-      dockerfile: Dockerfile
+      context: services
+      dockerfile: adventure_service/Dockerfile
     ports:
       - "8003:8003"
     environment:
       - DATABASE_URL=postgresql+asyncpg://${DB_USER}:${DB_PASS}@adventure-db:${DB_PORT}/${DB_NAME}
+      - API_KEY=${INSIDE_API_KEY}
     depends_on:
       - adventure-db
 
@@ -78,17 +97,16 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
-    ports:
-      - "5435:5432"
 
-  party_service:
+  party-service:
     build:
-      context: services/party_service
-      dockerfile: Dockerfile
+      context: services
+      dockerfile: party_service/Dockerfile
     ports:
       - "8004:8004"
     environment:
       - DATABASE_URL=postgresql+asyncpg://${DB_USER}:${DB_PASS}@party-db:${DB_PORT}/${DB_NAME}
+      - API_KEY=${INSIDE_API_KEY}
     depends_on:
       - party-db
 
@@ -98,5 +116,3 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
-    ports:
-      - "5436:5432"

@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 
 from contextlib import asynccontextmanager
 
@@ -8,12 +8,6 @@ from services.user_service.user_role import router as user_role_router
 
 from services.user_service.database import create_tables
 
-routers = [
-    user_router,
-    role_router,
-    user_role_router,
-]
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -22,5 +16,10 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
-for router in routers:
-    app.include_router(router)
+
+router = APIRouter(prefix="/user-service")
+router.include_router(user_router)
+router.include_router(role_router)
+router.include_router(user_role_router)
+
+app.include_router(router)

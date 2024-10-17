@@ -3,17 +3,18 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 
 from services.user_service.user.repository import UserRepository
-from services.user_service.user.schemas import SUserCreate, SUserResult, SUserGet, SUserSearch, SUserUpdate
+from services.common.schemas.user_service.user_schemas import SUserCreate, SUserResult, SUserGet, SUserSearch, \
+    SUserPatch, SUserPut
 
 router = APIRouter(
-    prefix='/users',
+    prefix="/users",
     tags=["Users"],
 )
 
 
-@router.post("")
+@router.post("", status_code=201)
 async def create_user(
-        data: Annotated[SUserCreate, Depends()],
+        data: SUserCreate,
 ) -> SUserResult:
     await UserRepository.create(data)
     return SUserResult(
@@ -62,7 +63,7 @@ async def delete_users(
 @router.put("/{user_name}")
 async def update_user(
         user_name: str,
-        data: Annotated[SUserUpdate, Depends()],
+        data: SUserPut,
 ) -> SUserResult:
     await UserRepository.put(user_name, data)
     return SUserResult(
@@ -73,7 +74,7 @@ async def update_user(
 @router.patch("/{user_name}")
 async def update_user(
         user_name: str,
-        data: Annotated[SUserUpdate, Depends()],
+        data: SUserPatch,
 ) -> SUserResult:
     await UserRepository.patch(user_name, data)
     return SUserResult(
