@@ -1,11 +1,12 @@
 import os
 from typing import Annotated
 
-import httpx
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
-from services.common.schemas.quest_service.quest_schemas import SQuestCreate, SQuestCreateResult, \
-    SQuestGet, SQuestSearch, SQuestResult, SQuestPut, SQuestPatch
+from services.api_gateway.routers.router import create, get_one, get, delete_one, delete, put, patch
+from services.common.schemas.quest_service.quest_schemas import SQuestCreate, SQuestCreateResult, SQuestGet, \
+    SQuestSearch, SQuestResult, SQuestPut, SQuestPatch
+from services.common.utils import check_api_key
 
 router = APIRouter(
     prefix="/quests",
@@ -16,86 +17,82 @@ router = APIRouter(
 @router.post("")
 async def create_quest(
         data: SQuestCreate,
+        api_key: str = Depends(check_api_key),
 ) -> SQuestCreateResult:
-    async with httpx.AsyncClient() as client:
-        response = await client.post(
-            url=f"""{os.getenv("QUEST_SERVICE_URL")}/quests""",
-            json=data.dict(),
-        )
-    if response.status_code == 201:
-        return SQuestCreateResult.model_validate(response.json())
-    raise HTTPException(status_code=500)
+    return await create(
+        url=f"""{os.getenv("QUEST_SERVICE_URL")}/quests""",
+        data=data,
+        output_type=SQuestCreateResult,
+    )
 
 
 @router.get("/{quest_id}")
 async def get_quest(
         quest_id: int,
+        api_key: str = Depends(check_api_key),
 ) -> SQuestGet:
-    async with httpx.AsyncClient() as client:
-        response = await client.get(
-            url=f"""{os.getenv("QUEST_SERVICE_URL")}/quests/{quest_id}""",
-        )
-    if response.status_code == 404:
-        raise HTTPException(status_code=404)
-    return SQuestGet.model_validate(response.json(), from_attributes=True)
+    return await get_one(
+        url=f"""{os.getenv("QUEST_SERVICE_URL")}/quests/{quest_id}""",
+        output_type=SQuestGet,
+    )
 
 
 @router.get("")
 async def get_quests(
         data: Annotated[SQuestSearch, Depends()],
+        api_key: str = Depends(check_api_key),
 ) -> list[SQuestGet]:
-    async with httpx.AsyncClient() as client:
-        response = await client.get(
-            url=f"""{os.getenv("QUEST_SERVICE_URL")}/quests""",
-            params=data.dict(exclude_none=True),
-        )
-    return [SQuestGet.model_validate(quest, from_attributes=True) for quest in response.json()]
+    return await get(
+        url=f"""{os.getenv("QUEST_SERVICE_URL")}/quests""",
+        data=data,
+        output_type=SQuestGet,
+    )
 
 
 @router.delete("/{quest_id}")
 async def delete_quest(
         quest_id: int,
+        api_key: str = Depends(check_api_key),
 ) -> SQuestResult:
-    async with httpx.AsyncClient() as client:
-        response = await client.delete(
-            url=f"""{os.getenv("QUEST_SERVICE_URL")}/quests/{quest_id}""",
-        )
-    return SQuestResult.model_validate(response.json())
+    return await delete_one(
+        url=f"""{os.getenv("QUEST_SERVICE_URL")}/quests/{quest_id}""",
+        output_type=SQuestResult,
+    )
 
 
 @router.delete("")
 async def delete_quests(
         data: Annotated[SQuestSearch, Depends()],
+        api_key: str = Depends(check_api_key),
 ) -> SQuestResult:
-    async with httpx.AsyncClient() as client:
-        response = await client.delete(
-            url=f"""{os.getenv("QUEST_SERVICE_URL")}/quests""",
-            params=data.dict(exclude_none=True),
-        )
-    return SQuestResult.model_validate(response.json())
+    return await delete(
+        url=f"""{os.getenv("QUEST_SERVICE_URL")}/quests""",
+        data=data,
+        output_type=SQuestResult,
+    )
 
 
 @router.put("/{quest_id}")
 async def update_quest(
         quest_id: int,
         data: SQuestPut,
+        api_key: str = Depends(check_api_key),
 ) -> SQuestResult:
-    async with httpx.AsyncClient() as client:
-        response = await client.put(
-            url=f"""{os.getenv("QUEST_SERVICE_URL")}/quests/{quest_id}""",
-            json=data.dict(),
-        )
-    return SQuestResult.model_validate(response.json())
+    return await put(
+        url=f"""{os.getenv("QUEST_SERVICE_URL")}/quests/{quest_id}""",
+        data=data,
+        output_type=SQuestResult,
+    )
 
 
 @router.patch("/{quest_id}")
 async def update_quest(
         quest_id: int,
         data: SQuestPatch,
+        api_key: str = Depends(check_api_key),
 ) -> SQuestResult:
-    async with httpx.AsyncClient() as client:
-        response = await client.patch(
-            url=f"""{os.getenv("QUEST_SERVICE_URL")}/quests/{quest_id}""",
-            json=data.dict(),
-        )
-    return SQuestResult.model_validate(response.json())
+    return await patch(
+        url=f"""{os.getenv("QUEST_SERVICE_URL")}/quests/{quest_id}""",
+        data=data,
+        output_type=SQuestResult,
+    )

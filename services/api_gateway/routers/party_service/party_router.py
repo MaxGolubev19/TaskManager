@@ -1,11 +1,12 @@
 import os
 from typing import Annotated
 
-import httpx
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
+from services.api_gateway.routers.router import create, get_one, get, delete_one, delete, put, patch
 from services.common.schemas.party_service.party_schemas import SPartyCreate, SPartyCreateResult, SPartyGet, \
     SPartyResult, SPartyPatch, SPartySearch, SPartyPut
+from services.common.utils import check_api_key
 
 router = APIRouter(
     prefix="/parties",
@@ -16,84 +17,82 @@ router = APIRouter(
 @router.post("")
 async def create_party(
         data: SPartyCreate,
+        api_key: str = Depends(check_api_key),
 ) -> SPartyCreateResult:
-    async with httpx.AsyncClient() as client:
-        response = await client.post(
-            url=f"""{os.getenv("PARTY_SERVICE_URL")}/parties""",
-            json=data.json(),
-        )
-    return SPartyCreateResult.model_validate(response.json())
+    return await create(
+        url=f"""{os.getenv("PARTY_SERVICE_URL")}/parties""",
+        data=data,
+        output_type=SPartyCreateResult,
+    )
 
 
 @router.get("/{party_id}")
 async def get_party_by_id(
         party_id: int,
+        api_key: str = Depends(check_api_key),
 ) -> SPartyGet:
-    async with httpx.AsyncClient() as client:
-        response = await client.get(
-            url=f"""{os.getenv("PARTY_SERVICE_URL")}/parties/{party_id}""",
-        )
-    if response.status_code == 404:
-        raise HTTPException(status_code=404)
-    return SPartyGet.model_validate(response.json(), from_attributes=True)
+    return await get_one(
+        url=f"""{os.getenv("PARTY_SERVICE_URL")}/parties/{party_id}""",
+        output_type=SPartyGet,
+    )
 
 
 @router.get("")
 async def get_parties(
         data: Annotated[SPartySearch, Depends()],
+        api_key: str = Depends(check_api_key),
 ) -> list[SPartyGet]:
-    async with httpx.AsyncClient() as client:
-        response = await client.get(
-            url=f"""{os.getenv("PARTY_SERVICE_URL")}/parties""",
-            params=data.dict(exclude_none=True),
-        )
-    return [SPartyGet.model_validate(party, from_attributes=True) for party in response.json()]
+    return await get(
+        url=f"""{os.getenv("PARTY_SERVICE_URL")}/parties""",
+        data=data,
+        output_type=SPartyGet,
+    )
 
 
 @router.delete("/{party_id}")
 async def delete_party_by_id(
         party_id: int,
+        api_key: str = Depends(check_api_key),
 ) -> SPartyResult:
-    async with httpx.AsyncClient() as client:
-        response = await client.delete(
-            url=f"""{os.getenv("PARTY_SERVICE_URL")}/parties/{party_id}""",
-        )
-    return SPartyResult.model_validate(response.json())
+    return await delete_one(
+        url=f"""{os.getenv("PARTY_SERVICE_URL")}/parties/{party_id}""",
+        output_type=SPartyResult,
+    )
 
 
 @router.delete("")
 async def delete_parties(
         data: Annotated[SPartySearch, Depends()],
+        api_key: str = Depends(check_api_key),
 ) -> SPartyResult:
-    async with httpx.AsyncClient() as client:
-        response = await client.delete(
-            url=f"""{os.getenv("PARTY_SERVICE_URL")}/parties""",
-            params=data.dict(exclude_none=True),
-        )
-    return SPartyResult.model_validate(response.json())
+    return await delete(
+        url=f"""{os.getenv("PARTY_SERVICE_URL")}/parties""",
+        data=data,
+        output_type=SPartyResult,
+    )
 
 
 @router.put("/{party_id}")
 async def update_party(
         party_id: int,
         data: SPartyPut,
+        api_key: str = Depends(check_api_key),
 ) -> SPartyResult:
-    async with httpx.AsyncClient() as client:
-        response = await client.put(
-            url=f"""{os.getenv("PARTY_SERVICE_URL")}/parties/{party_id}""",
-            json=data.json(),
-        )
-    return SPartyResult.model_validate(response.json())
+    return await put(
+        url=f"""{os.getenv("PARTY_SERVICE_URL")}/parties/{party_id}""",
+        data=data,
+        output_type=SPartyResult,
+    )
 
 
 @router.patch("/{party_id}")
 async def update_party(
         party_id: int,
         data: SPartyPatch,
+        api_key: str = Depends(check_api_key),
 ) -> SPartyResult:
-    async with httpx.AsyncClient() as client:
-        response = await client.patch(
-            url=f"""{os.getenv("PARTY_SERVICE_URL")}/parties/{party_id}""",
-            json=data.json(),
-        )
-    return SPartyResult.model_validate(response.json())
+    return await patch(
+        url=f"""{os.getenv("PARTY_SERVICE_URL")}/parties/{party_id}""",
+        data=data,
+        output_type=SPartyResult,
+    )

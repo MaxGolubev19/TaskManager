@@ -1,11 +1,12 @@
 import os
 from typing import Annotated
 
-import httpx
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
-from services.common.schemas.user_service.user_schemas import SUserCreate, SUserResult, \
-    SUserGet, SUserSearch, SUserResult, SUserPut, SUserPatch
+from services.api_gateway.routers.router import create, get_one, get, delete_one, delete, put, patch
+from services.common.schemas.user_service.user_schemas import SUserCreate, SUserResult, SUserGet, SUserSearch, \
+    SUserPut, SUserPatch
+from services.common.utils import check_api_key
 
 router = APIRouter(
     prefix="/users",
@@ -16,86 +17,82 @@ router = APIRouter(
 @router.post("")
 async def create_user(
         data: SUserCreate,
+        api_key: str = Depends(check_api_key),
 ) -> SUserResult:
-    async with httpx.AsyncClient() as client:
-        response = await client.post(
-            url=f"""{os.getenv("USER_SERVICE_URL")}/users""",
-            json=data.dict(),
-        )
-    if response.status_code == 201:
-        return SUserResult.model_validate(response.json())
-    raise HTTPException(status_code=500)
+    return await create(
+        url=f"""{os.getenv("USER_SERVICE_URL")}/users""",
+        data=data,
+        output_type=SUserResult,
+    )
 
 
 @router.get("/{user_id}")
 async def get_user(
         user_id: int,
+        api_key: str = Depends(check_api_key),
 ) -> SUserGet:
-    async with httpx.AsyncClient() as client:
-        response = await client.get(
-            url=f"""{os.getenv("USER_SERVICE_URL")}/users/{user_id}""",
-        )
-    if response.status_code == 404:
-        raise HTTPException(status_code=404)
-    return SUserGet.model_validate(response.json(), from_attributes=True)
+    return await get_one(
+        url=f"""{os.getenv("USER_SERVICE_URL")}/users/{user_id}""",
+        output_type=SUserGet,
+    )
 
 
 @router.get("")
 async def get_users(
         data: Annotated[SUserSearch, Depends()],
+        api_key: str = Depends(check_api_key),
 ) -> list[SUserGet]:
-    async with httpx.AsyncClient() as client:
-        response = await client.get(
-            url=f"""{os.getenv("USER_SERVICE_URL")}/users""",
-            params=data.dict(exclude_none=True),
-        )
-    return [SUserGet.model_validate(user, from_attributes=True) for user in response.json()]
+    return await get(
+        url=f"""{os.getenv("USER_SERVICE_URL")}/users""",
+        data=data,
+        output_type=SUserGet,
+    )
 
 
 @router.delete("/{user_id}")
 async def delete_user(
         user_id: int,
+        api_key: str = Depends(check_api_key),
 ) -> SUserResult:
-    async with httpx.AsyncClient() as client:
-        response = await client.delete(
-            url=f"""{os.getenv("USER_SERVICE_URL")}/users/{user_id}""",
-        )
-    return SUserResult.model_validate(response.json())
+    return await delete_one(
+        url=f"""{os.getenv("USER_SERVICE_URL")}/users/{user_id}""",
+        output_type=SUserResult,
+    )
 
 
 @router.delete("")
 async def delete_users(
         data: Annotated[SUserSearch, Depends()],
+        api_key: str = Depends(check_api_key),
 ) -> SUserResult:
-    async with httpx.AsyncClient() as client:
-        response = await client.delete(
-            url=f"""{os.getenv("USER_SERVICE_URL")}/users""",
-            params=data.dict(exclude_none=True),
-        )
-    return SUserResult.model_validate(response.json())
+    return await delete(
+        url=f"""{os.getenv("USER_SERVICE_URL")}/users""",
+        data=data,
+        output_type=SUserResult,
+    )
 
 
 @router.put("/{user_id}")
 async def update_user(
         user_id: int,
         data: SUserPut,
+        api_key: str = Depends(check_api_key),
 ) -> SUserResult:
-    async with httpx.AsyncClient() as client:
-        response = await client.put(
-            url=f"""{os.getenv("USER_SERVICE_URL")}/users/{user_id}""",
-            json=data.dict(),
-        )
-    return SUserResult.model_validate(response.json())
+    return await put(
+        url=f"""{os.getenv("USER_SERVICE_URL")}/users/{user_id}""",
+        data=data,
+        output_type=SUserResult,
+    )
 
 
 @router.patch("/{user_id}")
 async def update_user(
         user_id: int,
         data: SUserPatch,
+        api_key: str = Depends(check_api_key),
 ) -> SUserResult:
-    async with httpx.AsyncClient() as client:
-        response = await client.patch(
-            url=f"""{os.getenv("USER_SERVICE_URL")}/users/{user_id}""",
-            json=data.dict(),
-        )
-    return SUserResult.model_validate(response.json())
+    return await patch(
+        url=f"""{os.getenv("USER_SERVICE_URL")}/users/{user_id}""",
+        data=data,
+        output_type=SUserResult,
+    )

@@ -6,6 +6,7 @@ from services.adventure_service.adventure.repository import AdventureRepository
 from services.common.schemas.adventure_service.adventure_schemas import SAdventureCreate, SAdventureResult, \
     SAdventureGet, \
     SAdventureSearch, SAdventurePatch, SAdventureCreateResult, SAdventurePut
+from services.common.utils import check_api_key
 
 router = APIRouter(
     prefix="/adventures",
@@ -16,6 +17,7 @@ router = APIRouter(
 @router.post("", status_code=201)
 async def create_adventure(
         data: SAdventureCreate,
+        api_key=Depends(check_api_key),
 ) -> SAdventureCreateResult:
     adventure_id = await AdventureRepository.create(data)
     return SAdventureCreateResult(
@@ -24,9 +26,10 @@ async def create_adventure(
     )
 
 
-@router.get("/{adventure_id}")
+@router.get("/{adventure_id}", status_code=200)
 async def get_adventure(
         adventure_id: int,
+        api_key=Depends(check_api_key),
 ) -> SAdventureGet:
     adventure = await AdventureRepository.get_one(adventure_id)
     if adventure is None:
@@ -34,17 +37,19 @@ async def get_adventure(
     return adventure
 
 
-@router.get("")
+@router.get("", status_code=200)
 async def get_adventures(
         data: Annotated[SAdventureSearch, Depends()],
+        api_key=Depends(check_api_key),
 ) -> list[SAdventureGet]:
     adventures = await AdventureRepository.get(data)
     return adventures
 
 
-@router.delete("/{adventure_id}")
+@router.delete("/{adventure_id}", status_code=200)
 async def delete_adventure(
         adventure_id: int,
+        api_key=Depends(check_api_key),
 ) -> SAdventureResult:
     await AdventureRepository.delete_one(adventure_id)
     return SAdventureResult(
@@ -52,9 +57,10 @@ async def delete_adventure(
     )
 
 
-@router.delete("")
+@router.delete("", status_code=200)
 async def delete_adventures(
         data: Annotated[SAdventureSearch, Depends()],
+        api_key=Depends(check_api_key),
 ) -> SAdventureResult:
     await AdventureRepository.delete(data)
     return SAdventureResult(
@@ -62,10 +68,11 @@ async def delete_adventures(
     )
 
 
-@router.put("/{adventure_id}")
+@router.put("/{adventure_id}", status_code=200)
 async def update_adventure(
         adventure_id: int,
         data: SAdventurePut,
+        api_key=Depends(check_api_key),
 ) -> SAdventureResult:
     await AdventureRepository.put(adventure_id, data)
     return SAdventureResult(
@@ -73,10 +80,11 @@ async def update_adventure(
     )
 
 
-@router.patch("/{adventure_id}")
+@router.patch("/{adventure_id}", status_code=200)
 async def update_adventure(
         adventure_id: int,
         data: SAdventurePatch,
+        api_key=Depends(check_api_key),
 ) -> SAdventureResult:
     await AdventureRepository.patch(adventure_id, data)
     return SAdventureResult(

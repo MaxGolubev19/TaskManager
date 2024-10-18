@@ -1,11 +1,12 @@
 import os
 from typing import Annotated
 
-import httpx
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
+from services.api_gateway.routers.router import create, get_one, get, delete_one, delete, put, patch
 from services.common.schemas.board_service.column_schemas import SColumnCreate, SColumnCreateResult, SColumnGet, \
-    SColumnSearch, SColumnResult, SColumnPut, SColumnPatch
+    SColumnResult, SColumnSearch, SColumnPut, SColumnPatch
+from services.common.utils import check_api_key
 
 router = APIRouter(
     prefix="/columns",
@@ -15,87 +16,83 @@ router = APIRouter(
 
 @router.post("")
 async def create_column(
-        data: Annotated[SColumnCreate, Depends()],
+        data: SColumnCreate,
+        api_key: str = Depends(check_api_key),
 ) -> SColumnCreateResult:
-    async with httpx.AsyncClient() as client:
-        response = await client.post(
-            url=f"""{os.getenv("BOARD_SERVICE_URL")}/columns""",
-            json=data.dict(),
-        )
-    if response.status_code == 201:
-        return SColumnCreateResult.model_validate(response.json())
-    raise HTTPException(status_code=500)
+    return await create(
+        url=f"""{os.getenv("BOARD_SERVICE_URL")}/columns""",
+        data=data,
+        output_type=SColumnCreateResult,
+    )
 
 
 @router.get("/{column_id}")
 async def get_column(
         column_id: int,
+        api_key: str = Depends(check_api_key),
 ) -> SColumnGet:
-    async with httpx.AsyncClient() as client:
-        response = await client.get(
-            url=f"""{os.getenv("BOARD_SERVICE_URL")}/columns/{column_id}""",
-        )
-    if response.status_code == 404:
-        raise HTTPException(status_code=404)
-    return SColumnGet.model_validate(response.json(), from_attributes=True)
+    return await get_one(
+        url=f"""{os.getenv("BOARD_SERVICE_URL")}/columns/{column_id}""",
+        output_type=SColumnGet,
+    )
 
 
 @router.get("")
 async def get_columns(
         data: Annotated[SColumnSearch, Depends()],
+        api_key: str = Depends(check_api_key),
 ) -> list[SColumnGet]:
-    async with httpx.AsyncClient() as client:
-        response = await client.get(
-            url=f"""{os.getenv("BOARD_SERVICE_URL")}/columns""",
-            params=data.dict(exclude_none=True),
-        )
-    return [SColumnGet.model_validate(column, from_attributes=True) for column in response.json()]
+    return await get(
+        url=f"""{os.getenv("BOARD_SERVICE_URL")}/columns""",
+        data=data,
+        output_type=SColumnGet,
+    )
 
 
 @router.delete("/{column_id}")
 async def delete_column(
         column_id: int,
+        api_key: str = Depends(check_api_key),
 ) -> SColumnResult:
-    async with httpx.AsyncClient() as client:
-        response = await client.delete(
-            url=f"""{os.getenv("BOARD_SERVICE_URL")}/columns/{column_id}""",
-        )
-    return SColumnResult.model_validate(response.json())
+    return await delete_one(
+        url=f"""{os.getenv("BOARD_SERVICE_URL")}/columns/{column_id}""",
+        output_type=SColumnResult,
+    )
 
 
 @router.delete("")
 async def delete_columns(
         data: Annotated[SColumnSearch, Depends()],
+        api_key: str = Depends(check_api_key),
 ) -> SColumnResult:
-    async with httpx.AsyncClient() as client:
-        response = await client.delete(
-            url=f"""{os.getenv("BOARD_SERVICE_URL")}/columns""",
-            params=data.dict(exclude_none=True),
-        )
-    return SColumnResult.model_validate(response.json())
+    return await delete(
+        url=f"""{os.getenv("BOARD_SERVICE_URL")}/columns""",
+        data=data,
+        output_type=SColumnResult,
+    )
 
 
 @router.put("/{column_id}")
 async def update_column(
         column_id: int,
-        data: Annotated[SColumnPut, Depends()],
+        data: SColumnPut,
+        api_key: str = Depends(check_api_key),
 ) -> SColumnResult:
-    async with httpx.AsyncClient() as client:
-        response = await client.put(
-            url=f"""{os.getenv("BOARD_SERVICE_URL")}/columns/{column_id}""",
-            json=data.dict(),
-        )
-    return SColumnResult.model_validate(response.json())
+    return await put(
+        url=f"""{os.getenv("BOARD_SERVICE_URL")}/columns/{column_id}""",
+        data=data,
+        output_type=SColumnResult,
+    )
 
 
 @router.patch("/{column_id}")
 async def update_column(
         column_id: int,
-        data: Annotated[SColumnPatch, Depends()],
+        data: SColumnPatch,
+        api_key: str = Depends(check_api_key),
 ) -> SColumnResult:
-    async with httpx.AsyncClient() as client:
-        response = await client.patch(
-            url=f"""{os.getenv("BOARD_SERVICE_URL")}/columns/{column_id}""",
-            json=data.dict(),
-        )
-    return SColumnResult.model_validate(response.json())
+    return await patch(
+        url=f"""{os.getenv("BOARD_SERVICE_URL")}/columns/{column_id}""",
+        data=data,
+        output_type=SColumnResult,
+    )

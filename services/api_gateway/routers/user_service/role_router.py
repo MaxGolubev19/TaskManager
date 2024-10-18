@@ -1,11 +1,12 @@
 import os
 from typing import Annotated
 
-import httpx
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
-from services.common.schemas.user_service.role_schemas import SRoleCreate, SRoleResult, \
-    SRoleGet, SRoleSearch, SRoleResult, SRolePut, SRolePatch
+from services.api_gateway.routers.router import create, get_one, get, delete_one, delete, put, patch
+from services.common.schemas.user_service.role_schemas import SRoleCreate, SRoleResult, SRoleGet, SRoleSearch, \
+    SRolePut, SRolePatch
+from services.common.utils import check_api_key
 
 router = APIRouter(
     prefix="/roles",
@@ -16,86 +17,82 @@ router = APIRouter(
 @router.post("")
 async def create_role(
         data: SRoleCreate,
+        api_key: str = Depends(check_api_key),
 ) -> SRoleResult:
-    async with httpx.AsyncClient() as client:
-        response = await client.post(
-            url=f"""{os.getenv("USER_SERVICE_URL")}/roles""",
-            json=data.dict(),
-        )
-    if response.status_code == 201:
-        return SRoleResult.model_validate(response.json())
-    raise HTTPException(status_code=500)
+    return await create(
+        url=f"""{os.getenv("USER_SERVICE_URL")}/roles""",
+        data=data,
+        output_type=SRoleResult,
+    )
 
 
 @router.get("/{role_id}")
 async def get_role(
         role_id: int,
+        api_key: str = Depends(check_api_key),
 ) -> SRoleGet:
-    async with httpx.AsyncClient() as client:
-        response = await client.get(
-            url=f"""{os.getenv("USER_SERVICE_URL")}/roles/{role_id}""",
-        )
-    if response.status_code == 404:
-        raise HTTPException(status_code=404)
-    return SRoleGet.model_validate(response.json(), from_attributes=True)
+    return await get_one(
+        url=f"""{os.getenv("USER_SERVICE_URL")}/roles/{role_id}""",
+        output_type=SRoleGet,
+    )
 
 
 @router.get("")
 async def get_roles(
         data: Annotated[SRoleSearch, Depends()],
+        api_key: str = Depends(check_api_key),
 ) -> list[SRoleGet]:
-    async with httpx.AsyncClient() as client:
-        response = await client.get(
-            url=f"""{os.getenv("USER_SERVICE_URL")}/roles""",
-            params=data.dict(exclude_none=True),
-        )
-    return [SRoleGet.model_validate(role, from_attributes=True) for role in response.json()]
+    return await get(
+        url=f"""{os.getenv("USER_SERVICE_URL")}/roles""",
+        data=data,
+        output_type=SRoleGet,
+    )
 
 
 @router.delete("/{role_id}")
 async def delete_role(
         role_id: int,
+        api_key: str = Depends(check_api_key),
 ) -> SRoleResult:
-    async with httpx.AsyncClient() as client:
-        response = await client.delete(
-            url=f"""{os.getenv("USER_SERVICE_URL")}/roles/{role_id}""",
-        )
-    return SRoleResult.model_validate(response.json())
+    return await delete_one(
+        url=f"""{os.getenv("USER_SERVICE_URL")}/roles/{role_id}""",
+        output_type=SRoleResult,
+    )
 
 
 @router.delete("")
 async def delete_roles(
         data: Annotated[SRoleSearch, Depends()],
+        api_key: str = Depends(check_api_key),
 ) -> SRoleResult:
-    async with httpx.AsyncClient() as client:
-        response = await client.delete(
-            url=f"""{os.getenv("USER_SERVICE_URL")}/roles""",
-            params=data.dict(exclude_none=True),
-        )
-    return SRoleResult.model_validate(response.json())
+    return await delete(
+        url=f"""{os.getenv("USER_SERVICE_URL")}/roles""",
+        data=data,
+        output_type=SRoleResult,
+    )
 
 
 @router.put("/{role_id}")
 async def update_role(
         role_id: int,
         data: SRolePut,
+        api_key: str = Depends(check_api_key),
 ) -> SRoleResult:
-    async with httpx.AsyncClient() as client:
-        response = await client.put(
-            url=f"""{os.getenv("USER_SERVICE_URL")}/roles/{role_id}""",
-            json=data.dict(),
-        )
-    return SRoleResult.model_validate(response.json())
+    return await put(
+        url=f"""{os.getenv("USER_SERVICE_URL")}/roles/{role_id}""",
+        data=data,
+        output_type=SRoleResult,
+    )
 
 
 @router.patch("/{role_id}")
 async def update_role(
         role_id: int,
         data: SRolePatch,
+        api_key: str = Depends(check_api_key),
 ) -> SRoleResult:
-    async with httpx.AsyncClient() as client:
-        response = await client.patch(
-            url=f"""{os.getenv("USER_SERVICE_URL")}/roles/{role_id}""",
-            json=data.dict(),
-        )
-    return SRoleResult.model_validate(response.json())
+    return await patch(
+        url=f"""{os.getenv("USER_SERVICE_URL")}/roles/{role_id}""",
+        data=data,
+        output_type=SRoleResult,
+    )

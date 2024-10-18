@@ -6,6 +6,7 @@ from services.board_service.column.repository import ColumnRepository
 from services.common.schemas.board_service.column_schemas import SColumnCreate, SColumnResult, SColumnGet, \
     SColumnSearch, \
     SColumnPatch, SColumnCreateResult, SColumnPut
+from services.common.utils import check_api_key
 
 router = APIRouter(
     prefix='/columns',
@@ -16,6 +17,7 @@ router = APIRouter(
 @router.post("", status_code=201)
 async def create_column(
         data: SColumnCreate,
+        api_key=Depends(check_api_key),
 ) -> SColumnCreateResult:
     column_id = await ColumnRepository.create(data)
     return SColumnCreateResult(
@@ -24,9 +26,10 @@ async def create_column(
     )
 
 
-@router.get("/{column_id}")
+@router.get("/{column_id}", status_code=200)
 async def get_column_by_id(
         column_id: int,
+        api_key=Depends(check_api_key),
 ) -> SColumnGet:
     column = await ColumnRepository.get_one(column_id)
     if column is None:
@@ -34,17 +37,19 @@ async def get_column_by_id(
     return column
 
 
-@router.get("")
+@router.get("", status_code=200)
 async def get_columns(
         data: Annotated[SColumnSearch, Depends()],
+        api_key=Depends(check_api_key),
 ) -> list[SColumnGet]:
     columns = await ColumnRepository.get(data)
     return columns
 
 
-@router.delete("/{column_id}")
+@router.delete("/{column_id}", status_code=200)
 async def delete_column_by_id(
         column_id: int,
+        api_key=Depends(check_api_key),
 ) -> SColumnResult:
     await ColumnRepository.delete_one(column_id)
     return SColumnResult(
@@ -52,9 +57,10 @@ async def delete_column_by_id(
     )
 
 
-@router.delete("")
+@router.delete("", status_code=200)
 async def delete_columns(
         data: Annotated[SColumnSearch, Depends()],
+        api_key=Depends(check_api_key),
 ) -> SColumnResult:
     await ColumnRepository.delete(data)
     return SColumnResult(
@@ -62,10 +68,11 @@ async def delete_columns(
     )
 
 
-@router.put("/{column_id}")
+@router.put("/{column_id}", status_code=200)
 async def update_column(
         column_id: int,
         data: SColumnPut,
+        api_key=Depends(check_api_key),
 ) -> SColumnResult:
     await ColumnRepository.put(column_id, data)
     return SColumnResult(
@@ -73,10 +80,11 @@ async def update_column(
     )
 
 
-@router.patch("/{column_id}")
+@router.patch("/{column_id}", status_code=200)
 async def update_column(
         column_id: int,
         data: SColumnPatch,
+        api_key=Depends(check_api_key),
 ) -> SColumnResult:
     await ColumnRepository.patch(column_id, data)
     return SColumnResult(
