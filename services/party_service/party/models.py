@@ -4,7 +4,7 @@ from services.party_service.database import Model, int_pk, created_at, updated_a
 
 
 class PartyOrm(Model):
-    __tablename__ = "parties"
+    __tablename__ = "party"
 
     id: Mapped[int_pk]
     name: Mapped[str]

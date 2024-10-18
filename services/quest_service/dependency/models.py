@@ -5,7 +5,7 @@ from services.quest_service.database import Model, created_at, updated_at
 
 
 class DependencyOrm(Model):
-    __tablename__ = "dependencies"
+    __tablename__ = "dependency"
 
     parent_id: Mapped[int]
     child_id: Mapped[int]

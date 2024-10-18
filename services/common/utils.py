@@ -10,7 +10,6 @@ def check_api_key(api_key: str = Depends(APIKeyHeader(name="x-api-key", auto_err
             status_code=401,
             detail="API key missing",
         )
-    print(api_key, os.getenv("API_KEY"))
     if api_key != os.getenv("API_KEY"):
         raise HTTPException(
             status_code=403,

@@ -7,7 +7,7 @@ from services.quest_service.database import Model, int_pk, created_at, updated_a
 
 
 class CategoryOrm(Model):
-    __tablename__ = "categories"
+    __tablename__ = "category"
 
     id: Mapped[int_pk]
     name: Mapped[str]

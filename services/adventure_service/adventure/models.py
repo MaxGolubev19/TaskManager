@@ -4,7 +4,7 @@ from services.adventure_service.database import Model, int_pk, created_at, updat
 
 
 class AdventureOrm(Model):
-    __tablename__ = "adventures"
+    __tablename__ = "adventure"
 
     id: Mapped[int_pk]
     name: Mapped[str]

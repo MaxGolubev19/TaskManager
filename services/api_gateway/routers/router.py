@@ -24,7 +24,7 @@ async def create(
         )
     if response.status_code == 201:
         return output_type.model_validate(response.json())
-    raise HTTPException(status_code=500)
+    raise HTTPException(status_code=response.status_code, detail=response.text)
 
 
 async def get_one(
@@ -40,9 +40,7 @@ async def get_one(
         )
     if response.status_code == 200:
         return output_type.model_validate(response.json(), from_attributes=True)
-    if response.status_code == 404:
-        raise HTTPException(status_code=404)
-    raise HTTPException(status_code=500)
+    raise HTTPException(status_code=response.status_code, detail=response.text)
 
 
 async def get(
@@ -60,9 +58,7 @@ async def get(
         )
     if response.status_code == 200:
         return [output_type.model_validate(el, from_attributes=True) for el in response.json()]
-    if response.status_code == 404:
-        raise HTTPException(status_code=404)
-    raise HTTPException(status_code=500)
+    raise HTTPException(status_code=response.status_code, detail=response.text)
 
 
 async def delete_one(
@@ -78,9 +74,7 @@ async def delete_one(
         )
     if response.status_code == 200:
         return output_type.model_validate(response.json())
-    if response.status_code == 404:
-        raise HTTPException(status_code=404)
-    raise HTTPException(status_code=500)
+    raise HTTPException(status_code=response.status_code, detail=response.text)
 
 
 async def delete(
@@ -98,7 +92,7 @@ async def delete(
         )
     if response.status_code == 200:
         return output_type.model_validate(response.json())
-    raise HTTPException(status_code=500)
+    raise HTTPException(status_code=response.status_code, detail=response.text)
 
 
 async def put(
@@ -116,9 +110,7 @@ async def put(
         )
     if response.status_code == 200:
         return output_type.model_validate(response.json())
-    if response.status_code == 404:
-        raise HTTPException(status_code=404)
-    raise HTTPException(status_code=500)
+    raise HTTPException(status_code=response.status_code, detail=response.text)
 
 
 async def patch(
@@ -136,6 +128,4 @@ async def patch(
         )
     if response.status_code == 200:
         return output_type.model_validate(response.json())
-    if response.status_code == 404:
-        raise HTTPException(status_code=404)
-    raise HTTPException(status_code=500)
+    raise HTTPException(status_code=response.status_code, detail=response.text)

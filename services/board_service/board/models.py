@@ -4,7 +4,7 @@ from services.board_service.database import Model, int_pk, created_at, updated_a
 
 
 class BoardOrm(Model):
-    __tablename__ = "boards"
+    __tablename__ = "board"
 
     id: Mapped[int_pk]
     name: Mapped[str]

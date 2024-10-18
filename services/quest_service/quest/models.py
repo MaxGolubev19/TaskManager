@@ -7,7 +7,7 @@ from services.quest_service.database import Model, int_pk, created_at, updated_a
 
 
 class QuestOrm(Model):
-    __tablename__ = "quests"
+    __tablename__ = "quest"
 
     id: Mapped[int_pk]
     name: Mapped[str]

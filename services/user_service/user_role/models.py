@@ -6,7 +6,7 @@ from services.user_service.database import Model, created_at, updated_at
 
 
 class UserRoleOrm(Model):
-    __tablename__ = "user_roles"
+    __tablename__ = "user-role"
 
     user_name: Mapped[str] = mapped_column(ForeignKey("users.name", ondelete="CASCADE"))
     space_id: Mapped[int]

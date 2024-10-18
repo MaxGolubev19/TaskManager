@@ -5,7 +5,7 @@ from services.board_service.database import Model, int_pk, created_at, updated_a
 
 
 class ColumnOrm(Model):
-    __tablename__ = "columns"
+    __tablename__ = "column"
 
     id: Mapped[int_pk]
     space_id: Mapped[int]
