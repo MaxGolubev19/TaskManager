@@ -1,7 +1,8 @@
 import os
 from typing import TypeVar, Type
 
-import httpx
+import aiohttp
+from aiohttp import ClientSession
 from fastapi import HTTPException
 from pydantic import BaseModel
 
@@ -14,7 +15,7 @@ async def create(
         data: InputType,
         output_type: Type[OutputType],
 ) -> OutputType:
-    async with httpx.AsyncClient() as client:
+    async with aiohttp.ClientSession() as client:
         response = await client.post(
             url=url,
             json=data.dict(),
@@ -22,25 +23,25 @@ async def create(
                 "x-api-key": os.getenv("INSIDE_API_KEY"),
             },
         )
-    if response.status_code == 201:
-        return output_type.model_validate(response.json())
-    raise HTTPException(status_code=response.status_code, detail=response.text)
+    if response.status == 201:
+        return output_type.model_validate(await response.json())
+    raise HTTPException(status_code=response.status, detail=response.text)
 
 
 async def get_one(
         url: str,
         output_type: Type[OutputType],
 ) -> OutputType:
-    async with httpx.AsyncClient() as client:
+    async with aiohttp.ClientSession() as client:
         response = await client.get(
             url=url,
             headers={
                 "x-api-key": os.getenv("INSIDE_API_KEY"),
             },
         )
-    if response.status_code == 200:
-        return output_type.model_validate(response.json(), from_attributes=True)
-    raise HTTPException(status_code=response.status_code, detail=response.text)
+    if response.status == 200:
+        return output_type.model_validate(await response.json(), from_attributes=True)
+    raise HTTPException(status_code=response.status, detail=await response.text())
 
 
 async def get(
@@ -48,7 +49,7 @@ async def get(
         data: InputType,
         output_type: Type[OutputType],
 ) -> list[OutputType]:
-    async with httpx.AsyncClient() as client:
+    async with aiohttp.ClientSession() as client:
         response = await client.get(
             url=url,
             params=data.dict(exclude_none=True),
@@ -56,25 +57,25 @@ async def get(
                 "x-api-key": os.getenv("INSIDE_API_KEY"),
             },
         )
-    if response.status_code == 200:
-        return [output_type.model_validate(el, from_attributes=True) for el in response.json()]
-    raise HTTPException(status_code=response.status_code, detail=response.text)
+    if response.status == 200:
+        return [output_type.model_validate(el, from_attributes=True) for el in await response.json()]
+    raise HTTPException(status_code=response.status, detail=response.text)
 
 
 async def delete_one(
         url: str,
         output_type: Type[OutputType],
 ) -> OutputType:
-    async with httpx.AsyncClient() as client:
+    async with ClientSession() as client:
         response = await client.delete(
             url=url,
             headers={
                 "x-api-key": os.getenv("INSIDE_API_KEY"),
             },
         )
-    if response.status_code == 200:
-        return output_type.model_validate(response.json())
-    raise HTTPException(status_code=response.status_code, detail=response.text)
+    if response.status == 200:
+        return output_type.model_validate(await response.json())
+    raise HTTPException(status_code=response.status, detail=response.text)
 
 
 async def delete(
@@ -82,7 +83,7 @@ async def delete(
         data: InputType,
         output_type: Type[OutputType],
 ) -> OutputType:
-    async with httpx.AsyncClient() as client:
+    async with aiohttp.ClientSession() as client:
         response = await client.delete(
             url=url,
             params=data.dict(exclude_none=True),
@@ -90,9 +91,9 @@ async def delete(
                 "x-api-key": os.getenv("INSIDE_API_KEY"),
             },
         )
-    if response.status_code == 200:
-        return output_type.model_validate(response.json())
-    raise HTTPException(status_code=response.status_code, detail=response.text)
+    if response.status == 200:
+        return output_type.model_validate(await response.json())
+    raise HTTPException(status_code=response.status, detail=response.text)
 
 
 async def put(
@@ -100,7 +101,7 @@ async def put(
         data: InputType,
         output_type: Type[OutputType],
 ) -> OutputType:
-    async with httpx.AsyncClient() as client:
+    async with aiohttp.ClientSession() as client:
         response = await client.put(
             url=url,
             json=data.dict(),
@@ -108,9 +109,9 @@ async def put(
                 "x-api-key": os.getenv("INSIDE_API_KEY"),
             },
         )
-    if response.status_code == 200:
-        return output_type.model_validate(response.json())
-    raise HTTPException(status_code=response.status_code, detail=response.text)
+    if response.status == 200:
+        return output_type.model_validate(await response.json())
+    raise HTTPException(status_code=response.status, detail=response.text)
 
 
 async def patch(
@@ -118,7 +119,7 @@ async def patch(
         data: InputType,
         output_type: Type[OutputType],
 ) -> OutputType:
-    async with httpx.AsyncClient() as client:
+    async with ClientSession() as client:
         response = await client.patch(
             url=url,
             json=data.dict(),
@@ -126,6 +127,6 @@ async def patch(
                 "x-api-key": os.getenv("INSIDE_API_KEY"),
             },
         )
-    if response.status_code == 200:
-        return output_type.model_validate(response.json())
-    raise HTTPException(status_code=response.status_code, detail=response.text)
+    if response.status == 200:
+        return output_type.model_validate(await response.json())
+    raise HTTPException(status_code=response.status, detail=response.text)

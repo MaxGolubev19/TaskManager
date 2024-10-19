@@ -6,7 +6,6 @@ from fastapi import APIRouter, Depends
 from services.api_gateway.routers.router import create, get_one, get, delete_one, delete, put, patch
 from services.common.schemas.user_service.role_schemas import SRoleCreate, SRoleResult, SRoleGet, SRoleSearch, \
     SRolePut, SRolePatch
-from services.common.utils import check_api_key
 
 router = APIRouter(
     prefix="/roles",
@@ -17,7 +16,6 @@ router = APIRouter(
 @router.post("")
 async def create_role(
         data: SRoleCreate,
-        api_key: str = Depends(check_api_key),
 ) -> SRoleResult:
     return await create(
         url=f"""{os.getenv("USER_SERVICE_URL")}/roles""",
@@ -29,7 +27,6 @@ async def create_role(
 @router.get("/{role_id}")
 async def get_role(
         role_id: int,
-        api_key: str = Depends(check_api_key),
 ) -> SRoleGet:
     return await get_one(
         url=f"""{os.getenv("USER_SERVICE_URL")}/roles/{role_id}""",
@@ -40,7 +37,6 @@ async def get_role(
 @router.get("")
 async def get_roles(
         data: Annotated[SRoleSearch, Depends()],
-        api_key: str = Depends(check_api_key),
 ) -> list[SRoleGet]:
     return await get(
         url=f"""{os.getenv("USER_SERVICE_URL")}/roles""",
@@ -52,7 +48,6 @@ async def get_roles(
 @router.delete("/{role_id}")
 async def delete_role(
         role_id: int,
-        api_key: str = Depends(check_api_key),
 ) -> SRoleResult:
     return await delete_one(
         url=f"""{os.getenv("USER_SERVICE_URL")}/roles/{role_id}""",
@@ -63,7 +58,6 @@ async def delete_role(
 @router.delete("")
 async def delete_roles(
         data: Annotated[SRoleSearch, Depends()],
-        api_key: str = Depends(check_api_key),
 ) -> SRoleResult:
     return await delete(
         url=f"""{os.getenv("USER_SERVICE_URL")}/roles""",
@@ -76,7 +70,6 @@ async def delete_roles(
 async def update_role(
         role_id: int,
         data: SRolePut,
-        api_key: str = Depends(check_api_key),
 ) -> SRoleResult:
     return await put(
         url=f"""{os.getenv("USER_SERVICE_URL")}/roles/{role_id}""",
@@ -89,7 +82,6 @@ async def update_role(
 async def update_role(
         role_id: int,
         data: SRolePatch,
-        api_key: str = Depends(check_api_key),
 ) -> SRoleResult:
     return await patch(
         url=f"""{os.getenv("USER_SERVICE_URL")}/roles/{role_id}""",

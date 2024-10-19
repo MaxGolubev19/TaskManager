@@ -6,7 +6,6 @@ from fastapi import APIRouter, Depends
 from services.api_gateway.routers.router import create, get, delete
 from services.common.schemas.quest_service.dependency_schemas import SDependencyCreate, SDependencyResult, \
     SDependencyGet, SDependencySearch
-from services.common.utils import check_api_key
 
 router = APIRouter(
     prefix="/dependencies",
@@ -17,7 +16,6 @@ router = APIRouter(
 @router.post("")
 async def create_dependency(
         data: SDependencyCreate,
-        api_key: str = Depends(check_api_key),
 ) -> SDependencyResult:
     return await create(
         url=f"""{os.getenv("QUEST_SERVICE_URL")}/dependencies""",
@@ -29,7 +27,6 @@ async def create_dependency(
 @router.get("")
 async def get_dependencies(
         data: Annotated[SDependencySearch, Depends()],
-        api_key: str = Depends(check_api_key),
 ) -> list[SDependencyGet]:
     return await get(
         url=f"""{os.getenv("QUEST_SERVICE_URL")}/dependencies""",
@@ -41,7 +38,6 @@ async def get_dependencies(
 @router.delete("")
 async def delete_dependencies(
         data: Annotated[SDependencySearch, Depends()],
-        api_key: str = Depends(check_api_key),
 ) -> SDependencyResult:
     return await delete(
         url=f"""{os.getenv("QUEST_SERVICE_URL")}/dependencies""",

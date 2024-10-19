@@ -2,7 +2,6 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from services.common.utils import check_api_key
 from services.quest_service.category.repository import CategoryRepository
 from services.common.schemas.quest_service.category_schemas import SCategoryCreate, SCategoryResult, SCategoryGet, \
     SCategorySearch, SCategoryPatch, SCategoryCreateResult, SCategoryPut
@@ -16,7 +15,6 @@ router = APIRouter(
 @router.post("", status_code=201)
 async def create_category(
         data: SCategoryCreate,
-        api_key=Depends(check_api_key),
 ) -> SCategoryCreateResult:
     category_id = await CategoryRepository.create(data)
     return SCategoryCreateResult(
@@ -28,7 +26,6 @@ async def create_category(
 @router.get("/{category_id}", status_code=200)
 async def get_category_by_id(
         category_id: int,
-        api_key=Depends(check_api_key),
 ) -> SCategoryGet:
     category = await CategoryRepository.get_one(category_id)
     if category is None:
@@ -39,7 +36,6 @@ async def get_category_by_id(
 @router.get("", status_code=200)
 async def get_categories(
         data: Annotated[SCategorySearch, Depends()],
-        api_key=Depends(check_api_key),
 ) -> list[SCategoryGet]:
     categories = await CategoryRepository.get(data)
     return categories
@@ -48,7 +44,6 @@ async def get_categories(
 @router.delete("/{category_id}", status_code=200)
 async def delete_category_by_id(
         category_id: int,
-        api_key=Depends(check_api_key),
 ) -> SCategoryResult:
     await CategoryRepository.delete_one(category_id)
     return SCategoryResult(
@@ -59,7 +54,6 @@ async def delete_category_by_id(
 @router.delete("", status_code=200)
 async def delete_categories(
         data: Annotated[SCategorySearch, Depends()],
-        api_key=Depends(check_api_key),
 ) -> SCategoryResult:
     await CategoryRepository.delete(data)
     return SCategoryResult(
@@ -71,7 +65,6 @@ async def delete_categories(
 async def update_category(
         category_id: int,
         data: SCategoryPut,
-        api_key=Depends(check_api_key),
 ) -> SCategoryResult:
     await CategoryRepository.put(category_id, data)
     return SCategoryResult(
@@ -83,7 +76,6 @@ async def update_category(
 async def update_category(
         category_id: int,
         data: SCategoryPatch,
-        api_key=Depends(check_api_key),
 ) -> SCategoryResult:
     await CategoryRepository.patch(category_id, data)
     return SCategoryResult(

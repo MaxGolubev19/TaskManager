@@ -1,12 +1,14 @@
-from sqlalchemy.orm import Mapped
+import uuid
 
-from services.adventure_service.database import Model, int_pk, created_at, updated_at
+from sqlalchemy.orm import Mapped, mapped_column
+
+from services.adventure_service.database import Model, created_at, updated_at
 
 
 class AdventureOrm(Model):
     __tablename__ = "adventure"
 
-    id: Mapped[int_pk]
+    id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
     party_id: Mapped[int]
     created_at: Mapped[created_at]

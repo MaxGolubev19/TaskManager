@@ -1,97 +1,82 @@
-from typing import Optional
-
-from sqlalchemy import select, delete, update, and_
+from typing import Optional, List
 
 from services.adventure_service.database import new_session
 from services.adventure_service.adventure.models import AdventureOrm
+from services.common.utils.repository import Repository
 from services.common.schemas.adventure_service.adventure_schemas import SAdventureCreate, SAdventureGet, \
     SAdventureSearch, SAdventurePatch, SAdventurePut
 
 
 class AdventureRepository:
     @classmethod
+    def get_filters(cls, data: SAdventureSearch) -> List[bool]:
+        filters = []
+
+        if data.name:
+            filters.append(AdventureOrm.name == data.name)
+        if data.party_id:
+            filters.append(AdventureOrm.party_id == data.party_id)
+
+        return filters
+
+    @classmethod
     async def create(cls, data: SAdventureCreate) -> int:
-        async with new_session() as session:
-            adventure = AdventureOrm(**data.model_dump())
-            session.add(adventure)
-            await session.commit()
-            return adventure.id
+        return await Repository.create(
+            new_session,
+            AdventureOrm,
+            data,
+        )
 
     @classmethod
     async def get_one(cls, adventure_id: int) -> Optional[SAdventureGet]:
-        async with new_session() as session:
-            adventure = await session.get(AdventureOrm, adventure_id)
-            if adventure:
-                return SAdventureGet.model_validate(adventure, from_attributes=True)
+        adventure = await Repository.get(
+            new_session,
+            AdventureOrm,
+            [AdventureOrm.id == adventure_id],
+            SAdventureGet,
+        )
+        if len(adventure):
+            return adventure[0]
 
     @classmethod
     async def get(cls, data: SAdventureSearch) -> list[SAdventureGet]:
-        filters = []
-
-        if data.name:
-            filters.append(AdventureOrm.name == data.name)
-        if data.party_id:
-            filters.append(AdventureOrm.party_id == data.party_id)
-
-        async with new_session() as session:
-            result = await session.execute(
-                select(AdventureOrm)
-                .filter(and_(*filters))
-            )
-            adventure_models = result.scalars().all()
-            return [SAdventureGet.model_validate(adventure_model, from_attributes=True) for adventure_model in adventure_models]
+        return await Repository.get(
+            new_session,
+            AdventureOrm,
+            AdventureRepository.get_filters(data),
+            SAdventureGet,
+        )
 
     @classmethod
     async def delete_one(cls, adventure_id: int):
-        async with new_session() as session:
-            await session.execute(
-                delete(AdventureOrm)
-                .where(AdventureOrm.id == adventure_id)
-            )
-            await session.commit()
+        await Repository.delete(
+            new_session,
+            AdventureOrm,
+            [AdventureOrm.id == adventure_id],
+        )
 
     @classmethod
     async def delete(cls, data: SAdventureSearch):
-        filters = []
-
-        if data.name:
-            filters.append(AdventureOrm.name == data.name)
-        if data.party_id:
-            filters.append(AdventureOrm.party_id == data.party_id)
-
-        async with new_session() as session:
-            await session.execute(
-                delete(AdventureOrm)
-                .filter(and_(*filters))
-            )
-            await session.commit()
+        await Repository.delete(
+            new_session,
+            AdventureOrm,
+            AdventureRepository.get_filters(data),
+        )
 
     @classmethod
     async def put(cls, adventure_id: int, data: SAdventurePut):
-        async with new_session() as session:
-            await session.execute(
-                update(AdventureOrm)
-                .where(AdventureOrm.id == adventure_id)
-                .values(
-                    name=data.name,
-                    party_id=data.party_id
-                )
-            )
-            await session.commit()
+        await Repository.put(
+            new_session,
+            AdventureOrm,
+            [AdventureOrm.id == adventure_id],
+            data.dict(),
+        )
 
     @classmethod
     async def patch(cls, adventure_id: int, data: SAdventurePatch):
-        values = {}
-
-        if data.name:
-            values['name'] = data.name
-        if data.party_id:
-            values['party_id'] = data.party_id
-
-        async with new_session() as session:
-            await session.execute(
-                update(AdventureOrm)
-                .where(AdventureOrm.id == adventure_id)
-                .values(**values)
-            )
-            await session.commit()
+        await Repository.patch(
+            new_session,
+            AdventureOrm,
+            [AdventureOrm.id == adventure_id],
+            data.dict(exclude_none=True),
+        )

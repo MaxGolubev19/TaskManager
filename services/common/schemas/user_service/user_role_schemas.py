@@ -11,7 +11,7 @@ class RoleSpaceType(str, Enum):
 
 
 class SUserRoleGet(BaseModel):
-    user_name: str
+    user_id: int
     space_id: int
     space_type: RoleSpaceType
     role_id: int
@@ -20,21 +20,21 @@ class SUserRoleGet(BaseModel):
 
 
 class SUserRoleCreate(BaseModel):
-    user_name: str
+    user_id: int
     space_id: int
     space_type: RoleSpaceType
     role_id: int
 
 
 class SUserRoleSearch(BaseModel):
-    user_name: Optional[str] = None
+    user_id: Optional[int] = None
     space_id: Optional[int] = None
     space_type: Optional[RoleSpaceType] = None
     role_id: Optional[int] = None
 
 
 class SUserRolePut(BaseModel):
-    user_name: str
+    user_id: int
     space_id: int
     space_type: RoleSpaceType
     role_id: int

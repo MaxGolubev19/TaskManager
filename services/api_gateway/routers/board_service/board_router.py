@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends
 from services.api_gateway.routers.router import create, get_one, get, delete_one, delete, put, patch
 from services.common.schemas.board_service.board_schemas import SBoardCreate, SBoardCreateResult, SBoardGet, \
     SBoardResult, SBoardSearch, SBoardPut, SBoardPatch
-from services.common.utils import check_api_key
+from services.common.utils.api import check_api_key
 
 router = APIRouter(
     prefix="/boards",

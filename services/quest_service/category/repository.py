@@ -1,8 +1,6 @@
-from operator import and_
-from typing import Optional
+from typing import Optional, List
 
-from sqlalchemy import select, delete, update
-
+from services.common.utils.repository import Repository
 from services.quest_service.database import new_session
 from services.quest_service.category.models import CategoryOrm
 from services.common.schemas.quest_service.category_schemas import SCategoryCreate, SCategoryGet, SCategorySearch, \
@@ -11,12 +9,25 @@ from services.common.schemas.quest_service.category_schemas import SCategoryCrea
 
 class CategoryRepository:
     @classmethod
+    def get_filters(cls, data: SCategorySearch) -> List[bool]:
+        filters = []
+
+        if data.name:
+            filters.append(CategoryOrm.name == data.name)
+        if data.space_id:
+            filters.append(CategoryOrm.space_id == data.space_id)
+        if data.space_type:
+            filters.append(CategoryOrm.space_type == data.space_type)
+
+        return filters
+
+    @classmethod
     async def create(cls, data: SCategoryCreate) -> int:
-        async with new_session() as session:
-            category = CategoryOrm(**data.model_dump())
-            session.add(category)
-            await session.commit()
-            return category.id
+        return await Repository.create(
+            new_session,
+            CategoryOrm,
+            data,
+        )
 
     @classmethod
     async def create_many(cls, data: list[SCategoryCreate]) -> list[int]:
@@ -28,70 +39,48 @@ class CategoryRepository:
 
     @classmethod
     async def get_one(cls, category_id: int) -> Optional[SCategoryGet]:
-        async with new_session() as session:
-            category = await session.get(CategoryOrm, category_id)
-            if category:
-                return SCategoryGet.model_validate(category, from_attributes=True)
+        category = await Repository.get(
+            new_session,
+            CategoryOrm,
+            [CategoryOrm.id == category_id],
+            SCategoryGet,
+        )
+        if len(category):
+            return category[0]
 
     @classmethod
     async def get(cls, data: SCategorySearch) -> list[SCategoryGet]:
-        filters = []
-
-        if data.name:
-            filters.append(CategoryOrm.name == data.name)
-        if data.space_id:
-            filters.append(CategoryOrm.space_id == data.space_id)
-        if data.space_type:
-            filters.append(CategoryOrm.space_type == data.space_type)
-
-        async with new_session() as session:
-            result = await session.execute(
-                select(CategoryOrm)
-                .filter(and_(*filters))
-            )
-            category_models = result.scalars().all()
-            return [SCategoryGet.model_validate(category_model, from_attributes=True) for category_model in category_models]
+        return await Repository.get(
+            new_session,
+            CategoryOrm,
+            CategoryRepository.get_filters(data),
+            SCategoryGet,
+        )
 
     @classmethod
     async def delete_one(cls, category_id: int):
-        async with new_session() as session:
-            await session.execute(
-                delete(CategoryOrm)
-                .where(CategoryOrm.id == category_id)
-            )
-            await session.commit()
+        await Repository.delete(
+            new_session,
+            CategoryOrm,
+            [CategoryOrm.id == category_id],
+        )
 
     @classmethod
     async def delete(cls, data: SCategorySearch):
-        filters = []
-
-        if data.name:
-            filters.append(CategoryOrm.name == data.name)
-        if data.space_id:
-            filters.append(CategoryOrm.space_id == data.space_id)
-        if data.space_type:
-            filters.append(CategoryOrm.space_type == data.space_type)
-
-        async with new_session() as session:
-            await session.execute(
-                delete(CategoryOrm)
-                .filter(and_(*filters))
-            )
-            await session.commit()
+        await Repository.delete(
+            new_session,
+            CategoryOrm,
+            CategoryRepository.get_filters(data),
+        )
 
     @classmethod
     async def put(cls, category_id: int, data: SCategoryPut):
-        async with new_session() as session:
-            await session.execute(
-                update(CategoryOrm)
-                .where(CategoryOrm.id == category_id)
-                .values(
-                    name=data.name,
-                    space_id=data.space_id,
-                    space_type=data.space_type,
-                )
-            )
-            await session.commit()
+        await Repository.put(
+            new_session,
+            CategoryOrm,
+            [CategoryOrm.id == category_id],
+            data.dict(),
+        )
 
     @classmethod
     async def patch(cls, category_id: int, data: SCategoryPatch):
@@ -104,12 +93,9 @@ class CategoryRepository:
         if data.space_type:
             values['space_type'] = data.space_type
 
-        async with new_session() as session:
-            await session.execute(
-                update(CategoryOrm)
-                .where(CategoryOrm.id == category_id)
-                .values(**values)
-            )
-            await session.commit()
-
-
+        await Repository.patch(
+            new_session,
+            CategoryOrm,
+            [CategoryOrm.id == category_id],
+            data.dict(exclude_none=True),
+        )

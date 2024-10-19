@@ -8,13 +8,13 @@ from services.user_service.database import Model, created_at, updated_at
 class UserRoleOrm(Model):
     __tablename__ = "user-role"
 
-    user_name: Mapped[str] = mapped_column(ForeignKey("users.name", ondelete="CASCADE"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id", ondelete="CASCADE"))
     space_id: Mapped[int]
     space_type: Mapped[RoleSpaceType]
-    role_id: Mapped[int] = mapped_column(ForeignKey("roles.id", ondelete="CASCADE"))
+    role_id: Mapped[int] = mapped_column(ForeignKey("role.id", ondelete="CASCADE"))
     created_at: Mapped[created_at]
     updated_at: Mapped[updated_at]
 
     __table_args__ = (
-        PrimaryKeyConstraint('user_name', 'space_id', 'space_type'),
+        PrimaryKeyConstraint('user_id', 'space_id', 'space_type'),
     )
