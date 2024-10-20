@@ -1,10 +1,10 @@
 from fastapi import APIRouter
 from fastapi_users import FastAPIUsers
 
-from .auth import auth_backend
-from .manager import get_user_manager
-from .models import UserOrm
-from ...common.schemas.user_service.user_schemas import SUserCreate, SUserGet
+from services.user_service.user.auth import auth_backend
+from services.user_service.user.manager import get_user_manager
+from services.user_service.user.models import UserOrm
+from services.common.schemas.user_service.user_schemas import SUserCreate, SUserGet
 
 fastapi_users = FastAPIUsers[UserOrm, int](
     get_user_manager,

@@ -21,14 +21,6 @@ class UserRepository:
         return filters
 
     @classmethod
-    async def create(cls, data: SUserCreate) -> int:
-        return await Repository.create(
-            new_session,
-            UserOrm,
-            data,
-        )
-
-    @classmethod
     async def get_one(cls, user_id: int) -> Optional[SUserGet]:
         user = await Repository.get(
             new_session,

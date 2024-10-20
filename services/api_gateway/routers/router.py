@@ -25,7 +25,7 @@ async def create(
         )
     if response.status == 201:
         return output_type.model_validate(await response.json())
-    raise HTTPException(status_code=response.status, detail=response.text)
+    raise HTTPException(status_code=response.status, detail=await response.text())
 
 
 async def get_one(
@@ -59,7 +59,7 @@ async def get(
         )
     if response.status == 200:
         return [output_type.model_validate(el, from_attributes=True) for el in await response.json()]
-    raise HTTPException(status_code=response.status, detail=response.text)
+    raise HTTPException(status_code=response.status, detail=await response.text())
 
 
 async def delete_one(
@@ -75,7 +75,7 @@ async def delete_one(
         )
     if response.status == 200:
         return output_type.model_validate(await response.json())
-    raise HTTPException(status_code=response.status, detail=response.text)
+    raise HTTPException(status_code=response.status, detail=await response.text())
 
 
 async def delete(
@@ -93,7 +93,7 @@ async def delete(
         )
     if response.status == 200:
         return output_type.model_validate(await response.json())
-    raise HTTPException(status_code=response.status, detail=response.text)
+    raise HTTPException(status_code=response.status, detail=await response.text())
 
 
 async def put(
@@ -111,7 +111,7 @@ async def put(
         )
     if response.status == 200:
         return output_type.model_validate(await response.json())
-    raise HTTPException(status_code=response.status, detail=response.text)
+    raise HTTPException(status_code=response.status, detail=await response.text())
 
 
 async def patch(
@@ -129,4 +129,4 @@ async def patch(
         )
     if response.status == 200:
         return output_type.model_validate(await response.json())
-    raise HTTPException(status_code=response.status, detail=response.text)
+    raise HTTPException(status_code=response.status, detail=await response.text())

@@ -13,17 +13,6 @@ router = APIRouter(
 )
 
 
-@router.post("")
-async def create_user(
-        data: SUserCreate,
-) -> SUserCreateResult:
-    return await create(
-        url=f"""{os.getenv("USER_SERVICE_URL")}/users""",
-        data=data,
-        output_type=SUserCreateResult,
-    )
-
-
 @router.get("/{user_id}")
 async def get_user(
         user_id: int,

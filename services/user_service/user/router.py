@@ -4,23 +4,12 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from services.user_service.user.repository import UserRepository
 from services.common.schemas.user_service.user_schemas import SUserCreate, SUserCreateResult, SUserResult, SUserGet, \
-    SUserSearch, SUserPut, SUserPatch, SUserCreateResult
+    SUserSearch, SUserPut, SUserPatch
 
 router = APIRouter(
     prefix="/users",
     tags=["Users"],
 )
-
-
-@router.post("", status_code=201)
-async def create_user(
-        data: SUserCreate,
-) -> SUserCreateResult:
-    user_id = await UserRepository.create(data)
-    return SUserCreateResult(
-        ok=True,
-        id=user_id,
-    )
 
 
 @router.get("/{user_id}", status_code=200)

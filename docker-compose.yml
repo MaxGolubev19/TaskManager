@@ -31,6 +31,9 @@ services:
     environment:
       - DATABASE_URL=postgresql+asyncpg://${DB_USER}:${DB_PASS}@user-db:${DB_PORT}/${DB_NAME}
       - API_KEY=${INSIDE_API_KEY}
+      - SECRET=${SECRET}
+      - PUBLIC_KEY=${PUBLIC_KEY}
+      - PRIVATE_KEY=${PRIVATE_KEY}
     depends_on:
       - user-db
 

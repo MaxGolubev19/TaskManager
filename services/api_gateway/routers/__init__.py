@@ -1,4 +1,5 @@
 from services.api_gateway.routers.user_service import user_router
+from services.api_gateway.routers.user_service import auth_router
 from services.api_gateway.routers.user_service import role_router
 from services.api_gateway.routers.user_service import user_role_router
 from services.api_gateway.routers.quest_service import quest_router
