@@ -2,6 +2,7 @@ import os
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
+from fastapi_cache.decorator import cache
 
 from services.api_gateway.routers.router import create, get_one, get, delete_one, delete, put, patch
 from services.common.schemas.user_service.role_schemas import SRoleCreate, SRoleResult, SRoleGet, SRoleSearch, \
@@ -25,6 +26,7 @@ async def create_role(
 
 
 @router.get("/{role_id}")
+@cache(expire=60)
 async def get_role(
         role_id: int,
 ) -> SRoleGet:
@@ -35,6 +37,7 @@ async def get_role(
 
 
 @router.get("")
+@cache(expire=60)
 async def get_roles(
         data: Annotated[SRoleSearch, Depends()],
 ) -> list[SRoleGet]:

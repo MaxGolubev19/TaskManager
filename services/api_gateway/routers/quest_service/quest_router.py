@@ -2,6 +2,7 @@ import os
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
+from fastapi_cache.decorator import cache
 
 from services.api_gateway.routers.router import create, get_one, get, delete_one, delete, put, patch
 from services.common.schemas.quest_service.quest_schemas import SQuestCreate, SQuestCreateResult, SQuestGet, \
@@ -25,6 +26,7 @@ async def create_quest(
 
 
 @router.get("/{quest_id}")
+@cache(expire=60)
 async def get_quest(
         quest_id: int,
 ) -> SQuestGet:
@@ -35,6 +37,7 @@ async def get_quest(
 
 
 @router.get("")
+@cache(expire=60)
 async def get_quests(
         data: Annotated[SQuestSearch, Depends()],
 ) -> list[SQuestGet]:

@@ -2,6 +2,7 @@ import os
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
+from fastapi_cache.decorator import cache
 
 from services.api_gateway.routers.router import create, get, delete, put, patch
 from services.common.schemas.user_service.user_role_schemas import SUserRoleCreate, SUserRoleGet, SUserRoleSearch, \
@@ -25,6 +26,7 @@ async def create_user_role(
 
 
 @router.get("")
+@cache(expire=60)
 async def get_user_roles(
         data: Annotated[SUserRoleSearch, Depends()],
 ) -> list[SUserRoleGet]:

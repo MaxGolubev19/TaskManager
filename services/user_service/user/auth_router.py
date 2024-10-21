@@ -1,8 +1,7 @@
 from fastapi import APIRouter
 from fastapi_users import FastAPIUsers
 
-from services.user_service.user.auth import auth_backend
-from services.user_service.user.manager import get_user_manager
+from services.user_service.user.auth import auth_backend, get_user_manager
 from services.user_service.user.models import UserOrm
 from services.common.schemas.user_service.user_schemas import SUserCreate, SUserGet
 

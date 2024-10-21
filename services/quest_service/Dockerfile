@@ -1,14 +1,14 @@
-FROM python:3.9-slim
+FROM python:3.11
 
 WORKDIR /services/common
-COPY /common/ .
+COPY /common .
 
 WORKDIR /services/quest_service
 COPY /quest_service/requirements.txt .
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
-COPY /quest_service/ .
+COPY /quest_service .
 
 ENV PYTHONPATH=/
 

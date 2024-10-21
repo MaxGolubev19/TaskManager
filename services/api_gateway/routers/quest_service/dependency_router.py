@@ -2,6 +2,7 @@ import os
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
+from fastapi_cache.decorator import cache
 
 from services.api_gateway.routers.router import create, get, delete
 from services.common.schemas.quest_service.dependency_schemas import SDependencyCreate, SDependencyResult, \
@@ -25,6 +26,7 @@ async def create_dependency(
 
 
 @router.get("")
+@cache(expire=60)
 async def get_dependencies(
         data: Annotated[SDependencySearch, Depends()],
 ) -> list[SDependencyGet]:

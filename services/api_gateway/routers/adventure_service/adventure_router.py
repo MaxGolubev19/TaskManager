@@ -2,6 +2,7 @@ import os
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
+from fastapi_cache.decorator import cache
 
 from services.api_gateway.routers.router import create, get_one, get, delete_one, delete, put, patch
 from services.common.schemas.adventure_service.adventure_schemas import SAdventureCreate, SAdventureCreateResult, \
@@ -25,6 +26,7 @@ async def create_adventure(
 
 
 @router.get("/{adventure_id}")
+@cache(expire=60)
 async def get_adventure(
         adventure_id: int,
 ) -> SAdventureGet:
@@ -35,6 +37,7 @@ async def get_adventure(
 
 
 @router.get("")
+@cache(expire=60)
 async def get_adventures(
         data: Annotated[SAdventureSearch, Depends()],
 ) -> list[SAdventureGet]:

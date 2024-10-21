@@ -2,6 +2,7 @@ import os
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
+from fastapi_cache.decorator import cache
 
 from services.api_gateway.routers.router import create, get_one, get, delete_one, delete, put, patch
 from services.common.schemas.party_service.party_schemas import SPartyCreate, SPartyCreateResult, SPartyGet, \
@@ -25,6 +26,7 @@ async def create_party(
 
 
 @router.get("/{party_id}")
+@cache(expire=60)
 async def get_party_by_id(
         party_id: int,
 ) -> SPartyGet:
@@ -35,6 +37,7 @@ async def get_party_by_id(
 
 
 @router.get("")
+@cache(expire=60)
 async def get_parties(
         data: Annotated[SPartySearch, Depends()],
 ) -> list[SPartyGet]:

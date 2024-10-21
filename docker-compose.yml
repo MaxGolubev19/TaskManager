@@ -2,27 +2,35 @@ version: '3.8'
 
 services:
   api-gateway:
+    container_name: api-gateway
     build:
       context: services
       dockerfile: api_gateway/Dockerfile
     ports:
       - "8080:8080"
     environment:
-      - USER_SERVICE_URL=http://taskmanager-user-service-1:8000/user-service
-      - QUEST_SERVICE_URL=http://taskmanager-quest-service-1:8001/quest-service
-      - BOARD_SERVICE_URL=http://taskmanager-board-service-1:8002/board-service
-      - ADVENTURE_SERVICE_URL=http://taskmanager-adventure-service-1:8003/adventure-service
-      - PARTY_SERVICE_URL=http://taskmanager-party-service-1:8004/party-service
+      - USER_SERVICE_URL=http://user-service:8000/user-service
+      - QUEST_SERVICE_URL=http://quest-service:8001/quest-service
+      - BOARD_SERVICE_URL=http://board-service:8002/board-service
+      - ADVENTURE_SERVICE_URL=http://adventure-service:8003/adventure-service
+      - PARTY_SERVICE_URL=http://party-service:8004/party-service
+      - REDIS_URL=redis://api-gateway-redis:${PORT}
       - API_KEY=${API_KEY}
       - INSIDE_API_KEY=${INSIDE_API_KEY}
     depends_on:
+      - api-gateway-redis
       - user-service
       - quest-service
       - board-service
       - adventure-service
       - party-service
 
+  api-gateway-redis:
+    container_name: api-gateway-redis
+    image: redis:7
+
   user-service:
+    container_name: user-service
     build:
       context: services
       dockerfile: user_service/Dockerfile
@@ -38,6 +46,7 @@ services:
       - user-db
 
   user-db:
+    container_name: user-db
     image: postgres:latest
     environment:
       POSTGRES_DB: ${DB_NAME}
@@ -45,6 +54,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASS}
 
   quest-service:
+    container_name: quest-service
     build:
       context: services
       dockerfile: quest_service/Dockerfile
@@ -58,6 +68,7 @@ services:
       - quest-db
 
   quest-db:
+    container_name: quest-db
     image: postgres:latest
     environment:
       POSTGRES_DB: ${DB_NAME}
@@ -65,6 +76,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASS}
 
   board-service:
+    container_name: board-service
     build:
       context: services
       dockerfile: board_service/Dockerfile
@@ -77,6 +89,7 @@ services:
       - board-db
 
   board-db:
+    container_name: board-db
     image: postgres:latest
     environment:
       POSTGRES_DB: ${DB_NAME}
@@ -84,6 +97,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASS}
 
   adventure-service:
+    container_name: adventure-service
     build:
       context: services
       dockerfile: adventure_service/Dockerfile
@@ -96,6 +110,7 @@ services:
       - adventure-db
 
   adventure-db:
+    container_name: adventure-db
     image: postgres:latest
     environment:
       POSTGRES_DB: ${DB_NAME}
@@ -103,6 +118,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASS}
 
   party-service:
+    container_name: party-service
     build:
       context: services
       dockerfile: party_service/Dockerfile
@@ -115,6 +131,7 @@ services:
       - party-db
 
   party-db:
+    container_name: party-db
     image: postgres:latest
     environment:
       POSTGRES_DB: ${DB_NAME}

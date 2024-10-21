@@ -2,6 +2,7 @@ import os
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
+from fastapi_cache.decorator import cache
 
 from services.api_gateway.routers.router import create, get_one, get, delete_one, delete, put, patch
 from services.common.schemas.board_service.board_schemas import SBoardCreate, SBoardCreateResult, SBoardGet, \
@@ -27,6 +28,7 @@ async def create_board(
 
 
 @router.get("/{board_id}")
+@cache(expire=60)
 async def get_board(
         board_id: int,
         api_key: str = Depends(check_api_key),
@@ -38,6 +40,7 @@ async def get_board(
 
 
 @router.get("")
+@cache(expire=60)
 async def get_boards(
         data: Annotated[SBoardSearch, Depends()],
         api_key: str = Depends(check_api_key),

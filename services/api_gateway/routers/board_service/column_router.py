@@ -2,6 +2,7 @@ import os
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
+from fastapi_cache.decorator import cache
 
 from services.api_gateway.routers.router import create, get_one, get, delete_one, delete, put, patch
 from services.common.schemas.board_service.column_schemas import SColumnCreate, SColumnCreateResult, SColumnGet, \
@@ -27,6 +28,7 @@ async def create_column(
 
 
 @router.get("/{column_id}")
+@cache(expire=60)
 async def get_column(
         column_id: int,
         api_key: str = Depends(check_api_key),
@@ -38,6 +40,7 @@ async def get_column(
 
 
 @router.get("")
+@cache(expire=60)
 async def get_columns(
         data: Annotated[SColumnSearch, Depends()],
         api_key: str = Depends(check_api_key),
