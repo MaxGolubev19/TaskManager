@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   api-gateway:
     container_name: api-gateway
@@ -14,20 +12,16 @@ services:
       - BOARD_SERVICE_URL=http://board-service:8002/board-service
       - ADVENTURE_SERVICE_URL=http://adventure-service:8003/adventure-service
       - PARTY_SERVICE_URL=http://party-service:8004/party-service
-      - REDIS_URL=redis://api-gateway-redis:${PORT}
+      - REDIS_URL=redis://${REDIS_NAME}:${REDIS_PORT}
       - API_KEY=${API_KEY}
       - INSIDE_API_KEY=${INSIDE_API_KEY}
     depends_on:
-      - api-gateway-redis
+      - redis
       - user-service
       - quest-service
       - board-service
       - adventure-service
       - party-service
-
-  api-gateway-redis:
-    container_name: api-gateway-redis
-    image: redis:7
 
   user-service:
     container_name: user-service
@@ -37,21 +31,13 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql+asyncpg://${DB_USER}:${DB_PASS}@user-db:${DB_PORT}/${DB_NAME}
+      - DATABASE_URL=postgresql+asyncpg://${DB_USER}:${DB_PASS}@${DB_NAME}:${DB_PORT}/${DB_NAME}
       - API_KEY=${INSIDE_API_KEY}
       - SECRET=${SECRET}
       - PUBLIC_KEY=${PUBLIC_KEY}
       - PRIVATE_KEY=${PRIVATE_KEY}
     depends_on:
-      - user-db
-
-  user-db:
-    container_name: user-db
-    image: postgres:latest
-    environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASS}
+      - db
 
   quest-service:
     container_name: quest-service
@@ -61,19 +47,10 @@ services:
     ports:
       - "8001:8001"
     environment:
-      - DATABASE_URL=postgresql+asyncpg://${DB_USER}:${DB_PASS}@quest-db:${DB_PORT}/${DB_NAME}
+      - DATABASE_URL=postgresql+asyncpg://${DB_USER}:${DB_PASS}@${DB_NAME}:${DB_PORT}/${DB_NAME}
       - API_KEY=${INSIDE_API_KEY}
-      - INSIDE_API_KEY=${INSIDE_API_KEY}
     depends_on:
-      - quest-db
-
-  quest-db:
-    container_name: quest-db
-    image: postgres:latest
-    environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASS}
+      - db
 
   board-service:
     container_name: board-service
@@ -83,18 +60,10 @@ services:
     ports:
       - "8002:8002"
     environment:
-      - DATABASE_URL=postgresql+asyncpg://${DB_USER}:${DB_PASS}@board-db:${DB_PORT}/${DB_NAME}
+      - DATABASE_URL=postgresql+asyncpg://${DB_USER}:${DB_PASS}@${DB_NAME}:${DB_PORT}/${DB_NAME}
       - API_KEY=${INSIDE_API_KEY}
     depends_on:
-      - board-db
-
-  board-db:
-    container_name: board-db
-    image: postgres:latest
-    environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASS}
+      - db
 
   adventure-service:
     container_name: adventure-service
@@ -104,18 +73,10 @@ services:
     ports:
       - "8003:8003"
     environment:
-      - DATABASE_URL=postgresql+asyncpg://${DB_USER}:${DB_PASS}@adventure-db:${DB_PORT}/${DB_NAME}
+      - DATABASE_URL=postgresql+asyncpg://${DB_USER}:${DB_PASS}@${DB_NAME}:${DB_PORT}/${DB_NAME}
       - API_KEY=${INSIDE_API_KEY}
     depends_on:
-      - adventure-db
-
-  adventure-db:
-    container_name: adventure-db
-    image: postgres:latest
-    environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASS}
+      - db
 
   party-service:
     container_name: party-service
@@ -125,15 +86,19 @@ services:
     ports:
       - "8004:8004"
     environment:
-      - DATABASE_URL=postgresql+asyncpg://${DB_USER}:${DB_PASS}@party-db:${DB_PORT}/${DB_NAME}
+      - DATABASE_URL=postgresql+asyncpg://${DB_USER}:${DB_PASS}@${DB_NAME}:${DB_PORT}/${DB_NAME}
       - API_KEY=${INSIDE_API_KEY}
     depends_on:
-      - party-db
+      - db
 
-  party-db:
-    container_name: party-db
+  db:
+    container_name: db
     image: postgres:latest
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
+
+  redis:
+    container_name: redis
+    image: redis:7

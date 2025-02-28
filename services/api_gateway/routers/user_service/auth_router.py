@@ -45,12 +45,11 @@ async def login(
 @router.post("/auth/jwt/logout")
 async def logout(request: Request):
     async with aiohttp.ClientSession() as client:
+        headers = dict(request.headers)
+        headers["x-api-key"] = os.getenv("INSIDE_API_KEY")
         response = await client.post(
             url=f"""{os.getenv("USER_SERVICE_URL")}/auth/jwt/logout""",
-            headers={
-                "x-api-key": os.getenv("INSIDE_API_KEY"),
-                "Cookie": request.headers.get("cookie"),
-            },
+            headers=headers,
         )
     raise HTTPException(
         status_code=response.status,

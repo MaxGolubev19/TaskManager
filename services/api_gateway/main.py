@@ -4,6 +4,7 @@ from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from redis import asyncio as aioredis
 from fastapi import FastAPI, APIRouter, Depends
+from fastapi.middleware.cors import CORSMiddleware
 
 from services.api_gateway.routers import user_router, auth_router, role_router, user_role_router, quest_router, \
     dependency_router, category_router, board_router, column_router, adventure_router, party_router
@@ -25,6 +26,14 @@ routers = [
 ]
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_credentials=True,
+    allow_origins=["http://localhost:3000"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 api_router = APIRouter(prefix="/task-manager")
 for router in routers:
