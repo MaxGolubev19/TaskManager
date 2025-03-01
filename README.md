@@ -80,10 +80,10 @@ http://localhost:8080/docs
 Каждый микросервис содержит собственную документацию, доступную в соответствующих директориях.
 
 ### 📄 OpenAPI JSON
-Swagger-документация также доступна в файле `openapi.json`, который находится в `api_gateway/docs/`. Можно открыть его без запуска сервиса с помощью [Swagger Editor](https://editor-next.swagger.io/):
+Swagger-документация также доступна в файле `openapi.json`, который находится в `docs/`. Можно открыть его без запуска сервиса с помощью [Swagger Editor](https://editor-next.swagger.io/):
 1. Перейдите на [https://editor-next.swagger.io/](https://editor-next.swagger.io/).
 2. Нажмите `File` → `Import File`.
-3. Выберите `api_gateway/docs/openapi.json`.
+3. Выберите `docs/openapi.json`.
 
 ## 📜 Лицензия
 Проект лицензирован под [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License](http://creativecommons.org/licenses/by-nc-nd/4.0/).
